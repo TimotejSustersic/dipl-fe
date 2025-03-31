@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export async function API_POST(
   url: string,
   params: object = {},
-  succClb?: (params: unknown) => void,
-  errClb?: (params: unknown) => void,
+  succClb?: (params: any) => void,
+  errClb?: (params: any) => void,
 ) {
   try {
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + url, {

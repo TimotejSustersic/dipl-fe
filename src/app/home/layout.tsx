@@ -7,7 +7,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { ROUTE_MAPS } from "@/routes";
+import { ROUTE_MAPS, ROUTE_CARS } from "@/routes";
 import Link from "next/link";
 
 const HomeLayout = ({
@@ -23,7 +23,14 @@ const HomeLayout = ({
             <NavigationMenuItem>
               <Link href={ROUTE_MAPS} legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  MAPS
+                  Maps
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href={ROUTE_CARS} legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Cars
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
