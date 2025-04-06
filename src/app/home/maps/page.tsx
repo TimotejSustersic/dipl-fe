@@ -15,10 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserDataFieldNames } from "@/schemas/userDTO";
-import { VehicleDTO } from "@/schemas/vehicleDTO";
+import { VehicleDataFields, VehicleDTO } from "@/schemas/vehicleDTO";
 import { RoutingForm } from "@/components/maps/form";
-import { RouteDTO } from "@/schemas/routeDTO";
+import { RouteDataFields, RouteDTO } from "@/schemas/routeDTO";
 import { Card, CardContent } from "@/components/ui/card";
+import RouteMap from "@/components/maps/routeMap";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Maps = () => {
   const [vehicles, setVehicles] = useState<Array<VehicleDTO>>([]);
@@ -26,7 +28,9 @@ const Maps = () => {
   const [selectedVehicle, selectVehicle] = useState<VehicleDTO | undefined>(
     undefined
   );
-  const [graphData, setGraphData] = useState<unknown | undefined>(undefined);
+  const [selectedRoute, setSelectedRoute] = useState<RouteDTO | undefined>(
+    undefined
+  );
   const [routesRefresh, setRoutesRefresh] = useState<boolean>(false);
 
   useEffect(() => {
@@ -80,17 +84,33 @@ const Maps = () => {
 
           <RoutingForm
             selectedVehicle={selectedVehicle}
-            setGraphData={setGraphData}
+            setSelectedRoute={setSelectedRoute}
             setRefresh={setRoutesRefresh}
           />
           {routesHistory.map((route, index) => (
-            <Card key={index}>
+            <Card
+              key={index}
+              onClick={() => {
+                if (selectedVehicle == undefined) return;
+
+                setSelectedRoute(undefined);
+
+                const params: any = new Object();
+                params[UserDataFieldNames.user_name] = "";
+                params[VehicleDataFields.vehicle_id] = selectedVehicle.id;
+                // dont send so i know which one is different (i can get the data in backedn)
+                // params[VehicleDataFields.battery_capacity] =
+                //   selectedVehicle.battery_capacity;
+                params[RouteDataFields.start_city] = route.start_city;
+                params[RouteDataFields.end_city] = route.end_city;
+
+                API_POST("graphs/routing/new", params, (result: RouteDTO) => {
+                  setSelectedRoute(result);
+                });
+              }}
+            >
               <CardContent>
-                <div
-                  onClick={() => {
-                    setGraphData(route);
-                  }}
-                >
+                <div>
                   {route.start_city} -{">"} {route.end_city}
                 </div>
               </CardContent>
@@ -99,7 +119,11 @@ const Maps = () => {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={75}>
-          <div>{String(graphData)}</div>
+          {selectedRoute != undefined ? (
+            <RouteMap data={selectedRoute} />
+          ) : (
+            <Skeleton className="h-[500px] w-full" />
+          )}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

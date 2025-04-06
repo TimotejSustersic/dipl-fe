@@ -1,11 +1,13 @@
 
 export type RouteDTO =  {
-  id: string,
-  start: string,
-  end: number,
   start_city: string,
   end_city: string,
-  batery_capacity: number,
+
+  distance: number;
+  start: [number, number]; // [lon, lat]
+  end: [number, number];   // [lon, lat]
+  geometry: string;        // OSRM polyline
+  waypoints: { name: string; lon: number; lat: number }[];
 };
 
 export const RouteDataFields =  {
@@ -14,4 +16,5 @@ export const RouteDataFields =  {
   end: "end",
   start_city: "start_city",
   end_city: "end_city",
+  route: "route",
 };

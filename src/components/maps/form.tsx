@@ -13,12 +13,12 @@ import { Dispatch, SetStateAction, useEffect } from "react";
 
 import { UserDataFieldNames } from "@/schemas/userDTO";
 import { VehicleDataFields, VehicleDTO } from "@/schemas/vehicleDTO";
-import { RouteDataFields } from "@/schemas/routeDTO";
+import { RouteDataFields, RouteDTO } from "@/schemas/routeDTO";
 import { RouteSchema } from "@/components/maps/route";
 
 type DTO = {
   selectedVehicle?: VehicleDTO;
-  setGraphData: Dispatch<SetStateAction<unknown>>;
+  setSelectedRoute: Dispatch<SetStateAction<RouteDTO | undefined>>;
   setRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -62,6 +62,9 @@ export const RoutingForm = (settings: DTO) => {
   }, [settings.selectedVehicle, form]);
 
   const onSubmit = (values: z.infer<typeof RouteSchema>) => {
+    
+    settings.setSelectedRoute(undefined);
+
     const params: any = new Object();
     params[UserDataFieldNames.user_name] = "";
     params[VehicleDataFields.vehicle_id] = values.vehicle_id;
@@ -69,8 +72,8 @@ export const RoutingForm = (settings: DTO) => {
     params[RouteDataFields.start_city] = values.start_city;
     params[RouteDataFields.end_city] = values.end_city;
 
-    API_POST("graphs/routing/new", params, (result: unknown) => {
-      settings.setGraphData(result);
+    API_POST("graphs/routing/new", params, (result: RouteDTO) => {
+      settings.setSelectedRoute(result);
       settings.setRefresh(true);
     });
   };

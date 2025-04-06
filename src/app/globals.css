@@ -74,3 +74,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.leaflet-container {
+  width: 100%;
+  height: 500px;
+}
