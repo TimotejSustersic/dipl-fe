@@ -26,6 +26,7 @@ export const VehicleForm = (settings: DTO) => {
     params[VehicleDataFields.name] = values.name;
     params[VehicleDataFields.battery_capacity] = values.battery_capacity;
     params[VehicleDataFields.consumption_rate] = values.consumption_rate;
+    params[VehicleDataFields.year_of_manufacture] = values.year_of_manufacture;
 
     API_POST("graphs/vehicles/new", params, () => {
       settings.setRefresh(true);
@@ -37,6 +38,7 @@ export const VehicleForm = (settings: DTO) => {
       name: "",
       battery_capacity: "300",
       consumption_rate: "6",
+      year_of_manufacture: "2000",
     },
   });
 
@@ -48,6 +50,7 @@ export const VehicleForm = (settings: DTO) => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <SimpleFormInput name="name" form={form} />
+              <SimpleFormInput name="year_of_manufacture" form={form} />
               <SimpleFormInput name="battery_capacity" form={form} />
               <SimpleFormInput name="consumption_rate" form={form} />
 

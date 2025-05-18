@@ -84,8 +84,10 @@ const Cars = () => {
         <ResizablePanel defaultSize={75}>
           {selectedVehicle != undefined ? (
             <div>
-              <div>{selectedVehicle.name}</div>
-              <div>{selectedVehicle.battery_capacity}</div>
+              <div>name: {selectedVehicle.name}</div>
+              <div>battery_capacity: {selectedVehicle.battery_capacity}</div>
+              <div>year_of_manufacture: {selectedVehicle.year_of_manufacture}</div>
+              <div>consumption_rate: {selectedVehicle.consumption_rate}</div>
             </div>
           ) : (
             <VehicleForm setRefresh={setVehiclesRefresh} />

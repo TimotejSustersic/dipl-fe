@@ -13,12 +13,12 @@ import { Dispatch, SetStateAction, useEffect } from "react";
 
 import { UserDataFieldNames } from "@/schemas/userDTO";
 import { VehicleDataFields, VehicleDTO } from "@/schemas/vehicleDTO";
-import { RouteDataFields, RouteDTO } from "@/schemas/routeDTO";
+import { RouteDataFields, RouteDTO, RouteQueryDTO } from "@/schemas/routeDTO";
 import { RouteSchema } from "@/components/maps/route";
 
 type DTO = {
   selectedVehicle?: VehicleDTO;
-  setSelectedRoute: Dispatch<SetStateAction<RouteDTO | undefined>>;
+  setSelectedRoute: Dispatch<SetStateAction<RouteQueryDTO | undefined>>;
   setRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -41,9 +41,7 @@ export const RoutingForm = (settings: DTO) => {
       vehicle_id: String(
         settings.selectedVehicle?.id ?? undefined
       ),      
-      battery_capacity: String(
-        settings.selectedVehicle?.battery_capacity ?? undefined
-      ),
+      battery_capacity: "100",
       start_city: "",
       end_city: "",
     },
@@ -54,10 +52,6 @@ export const RoutingForm = (settings: DTO) => {
     form.setValue(
       "vehicle_id",
       String(settings.selectedVehicle?.id) ?? undefined
-    );
-    form.setValue(
-      "battery_capacity",
-      String(settings.selectedVehicle?.battery_capacity) ?? undefined
     );
   }, [settings.selectedVehicle, form]);
 
@@ -72,7 +66,7 @@ export const RoutingForm = (settings: DTO) => {
     params[RouteDataFields.start_city] = values.start_city;
     params[RouteDataFields.end_city] = values.end_city;
 
-    API_POST("graphs/routing/new", params, (result: RouteDTO) => {
+    API_POST("graphs/routing/new", params, (result: RouteQueryDTO) => {
       settings.setSelectedRoute(result);
       settings.setRefresh(true);
     });

@@ -17,18 +17,18 @@ import {
 import { UserDataFieldNames } from "@/schemas/userDTO";
 import { VehicleDataFields, VehicleDTO } from "@/schemas/vehicleDTO";
 import { RoutingForm } from "@/components/maps/form";
-import { RouteDataFields, RouteDTO } from "@/schemas/routeDTO";
+import { RouteDataFields, RouteDTO, RouteHistoryDTO, RouteQueryDTO } from "@/schemas/routeDTO";
 import { Card, CardContent } from "@/components/ui/card";
 import RouteMap from "@/components/maps/routeMap";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Maps = () => {
   const [vehicles, setVehicles] = useState<Array<VehicleDTO>>([]);
-  const [routesHistory, setRoutesHistory] = useState<Array<RouteDTO>>([]);
+  const [routesHistory, setRoutesHistory] = useState<Array<RouteHistoryDTO>>([]);
   const [selectedVehicle, selectVehicle] = useState<VehicleDTO | undefined>(
     undefined
   );
-  const [selectedRoute, setSelectedRoute] = useState<RouteDTO | undefined>(
+  const [selectedRoute, setSelectedRoute] = useState<RouteQueryDTO | undefined>(
     undefined
   );
   const [routesRefresh, setRoutesRefresh] = useState<boolean>(false);
@@ -52,7 +52,7 @@ const Maps = () => {
     const params = {
       [UserDataFieldNames.user_name]: "",
     };
-    API_POST("graphs/routing/query", params, (result: Array<RouteDTO>) => {
+    API_POST("graphs/routing/query", params, (result: Array<RouteHistoryDTO>) => {
       setRoutesHistory(result);
     });
   };
@@ -104,7 +104,7 @@ const Maps = () => {
                 params[RouteDataFields.start_city] = route.start_city;
                 params[RouteDataFields.end_city] = route.end_city;
 
-                API_POST("graphs/routing/new", params, (result: RouteDTO) => {
+                API_POST("graphs/routing/new", params, (result: RouteQueryDTO) => {
                   setSelectedRoute(result);
                 });
               }}
@@ -113,6 +113,9 @@ const Maps = () => {
                 <div>
                   {route.start_city} -{">"} {route.end_city}
                 </div>
+                <div>{route.total_consumption}</div>
+                <div>{route.total_distance}</div>
+                <div>{route.total_travel_time}</div>
               </CardContent>
             </Card>
           ))}
