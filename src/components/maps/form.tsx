@@ -20,6 +20,7 @@ type DTO = {
   selectedVehicle?: VehicleDTO;
   setSelectedRoute: Dispatch<SetStateAction<RouteQueryDTO | undefined>>;
   setRefresh: Dispatch<SetStateAction<boolean>>;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 export const RoutingForm = (settings: DTO) => {
@@ -66,9 +67,11 @@ export const RoutingForm = (settings: DTO) => {
     params[RouteDataFields.start_city] = values.start_city;
     params[RouteDataFields.end_city] = values.end_city;
 
+    settings.setIsLoading(true);
     API_POST("graphs/routing/new", params, (result: RouteQueryDTO) => {
       settings.setSelectedRoute(result);
       settings.setRefresh(true);
+      settings.setIsLoading(false);
     });
   };
 

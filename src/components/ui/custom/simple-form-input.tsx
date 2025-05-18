@@ -10,23 +10,27 @@ import {
 import { Input } from "@/components/ui/input";
 
 type DTO = {
-  form: any,
-  name: string,
+  form: any;
+  name: string;
 };
 
 export const SimpleFormInput = (settings: DTO) => {
-  
   return (
     <FormField
       control={settings.form.control}
       name={settings.name}
       render={({ field }) => (
-        <FormItem>
-          <FormLabel>{settings.name}</FormLabel>
+        <FormItem className="mb-4">
+          <FormLabel className="font-semibold text-gray-800">
+            {settings.name}
+          </FormLabel>
           <FormControl>
-            <Input {...field} />
+            <Input
+              {...field}
+              className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+            />
           </FormControl>
-          <FormMessage />
+          <FormMessage className="text-red-600" />
         </FormItem>
       )}
     />

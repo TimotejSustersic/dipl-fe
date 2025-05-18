@@ -20,17 +20,18 @@ export const SimpleFormCheckbox = (settings: DTO) => {
       control={settings.form.control}
       name={settings.name}
       render={({ field }) => (
-        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+        <FormItem className="flex flex-row items-center space-x-3 rounded-md border border-gray-300 p-3 shadow-sm hover:shadow-md transition-shadow">
           <FormControl>
-            <Checkbox 
+            <Checkbox
               checked={field.value}
               onCheckedChange={field.onChange}
+              className="focus:ring-2 focus:ring-green-500 rounded"
             />
           </FormControl>
           <div className="space-y-1 leading-none">
-            <FormLabel>{settings.name}</FormLabel>
+            <FormLabel className="font-semibold text-gray-800">{settings.name}</FormLabel>
           </div>
-          <FormMessage />
+          <FormMessage className="text-red-600" />
         </FormItem>
       )}
     />

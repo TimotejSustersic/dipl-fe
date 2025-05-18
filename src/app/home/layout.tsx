@@ -9,6 +9,29 @@ import {
 } from "@/components/ui/navigation-menu";
 import { ROUTE_MAPS, ROUTE_CARS } from "@/routes";
 import Link from "next/link";
+import { Map, Car, Home } from "lucide-react";
+
+interface NavLinkProps {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+}
+
+const NavLink = ({ href, icon: Icon, label }: NavLinkProps) => (
+  <NavigationMenuItem>
+    <Link href={href}>
+      <NavigationMenuLink
+        className={
+          navigationMenuTriggerStyle() +
+          " flex items-center gap-2 transition-all hover:bg-primary/10"
+        }
+      >
+        <Icon className="h-4 w-4" />
+        <span>{label}</span>
+      </NavigationMenuLink>
+    </Link>
+  </NavigationMenuItem>
+);
 
 const HomeLayout = ({
   children,
@@ -16,27 +39,24 @@ const HomeLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div id="home" className="h-screen flex flex-col">
-      <div id="home-navigation" className="h-16 flex-shrink-0">
+    <div className="w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center px-4">
+        <Link href={ROUTE_MAPS} className="flex items-center gap-2 mr-6">
+          {" "}
+          {/* Changed from <Link href="/"> */}
+          <Map className="h-5 w-5 text-primary" />
+          <span className="font-bold text-lg text-primary hidden sm:inline-block">
+            Maps
+          </span>
+        </Link>
+
         <NavigationMenu>
           <NavigationMenuList>
-            <NavigationMenuItem>
-              <Link href={ROUTE_MAPS} legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Maps
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <Link href={ROUTE_CARS} legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Cars
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
+            <NavLink href={ROUTE_CARS} label="Vehicles" icon={Car}></NavLink>
           </NavigationMenuList>
         </NavigationMenu>
       </div>
+
       <div id="home-body" className="flex-grow">
         {children}
       </div>
