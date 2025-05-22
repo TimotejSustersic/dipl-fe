@@ -7,9 +7,9 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { ROUTE_MAPS, ROUTE_CARS } from "@/routes";
+import { ROUTE_MAPS, ROUTE_CARS, ROUTE_TESTING } from "@/routes";
 import Link from "next/link";
-import { Map, Car, Home } from "lucide-react";
+import { Map, Car, FlaskConical } from "lucide-react";
 
 interface NavLinkProps {
   href: string;
@@ -19,17 +19,18 @@ interface NavLinkProps {
 
 const NavLink = ({ href, icon: Icon, label }: NavLinkProps) => (
   <NavigationMenuItem>
-    <Link href={href}>
+   
       <NavigationMenuLink
         className={
           navigationMenuTriggerStyle() +
           " flex items-center gap-2 transition-all hover:bg-primary/10"
         }
+        href={href}
       >
         <Icon className="h-4 w-4" />
         <span>{label}</span>
       </NavigationMenuLink>
-    </Link>
+    
   </NavigationMenuItem>
 );
 
@@ -53,6 +54,7 @@ const HomeLayout = ({
         <NavigationMenu>
           <NavigationMenuList>
             <NavLink href={ROUTE_CARS} label="Vehicles" icon={Car}></NavLink>
+            <NavLink href={ROUTE_TESTING} label="Testing" icon={FlaskConical}></NavLink>
           </NavigationMenuList>
         </NavigationMenu>
       </div>

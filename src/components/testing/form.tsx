@@ -12,47 +12,40 @@ import { SimpleFormInput } from "@/components/ui/custom/simple-form-input";
 import { Dispatch, SetStateAction } from "react";
 
 import { UserDataFieldNames } from "@/schemas/userDTO";
-import { VehicleDataFields } from "@/schemas/vehicleDTO";
-import { VehicleSchema } from "@/components/cars/vehicle";
+import { TestingDataFields, TestingSchema } from "./dto";
 
 type DTO = {
   setRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
-export const VehicleForm = (settings: DTO) => {
-  const onSubmit = (values: z.infer<typeof VehicleSchema>) => {
+export const TestingForm = (settings: DTO) => {
+  const onSubmit = (values: z.infer<typeof TestingSchema>) => {
     const params: any = new Object();
     params[UserDataFieldNames.user_name] = "";
-    params[VehicleDataFields.name] = values.name;
-    params[VehicleDataFields.battery_capacity] = values.battery_capacity;
-    params[VehicleDataFields.consumption_rate] = values.consumption_rate;
-    params[VehicleDataFields.year_of_manufacture] = values.year_of_manufacture;
+    params[TestingDataFields.cities] = values.cities;
+    params[TestingDataFields.battery_capacity] = values.battery_capacity;
 
-    API_POST("graphs/vehicles/new", params, () => {
+    API_POST("graphs/testing/new", params, () => {
       settings.setRefresh(true);
     });
   };
-  const form = useForm<z.infer<typeof VehicleSchema>>({
-    resolver: zodResolver(VehicleSchema),
+  const form = useForm<z.infer<typeof TestingSchema>>({
+    resolver: zodResolver(TestingSchema),
     defaultValues: {
-      name: "",
+      cities: "",
       battery_capacity: "100",
-      consumption_rate: "0.175",
-      year_of_manufacture: "2000",
     },
   });
 
   return (
     <div>
-      <h3>Create a new Vehicle</h3>
+      {/* <h3>Create a new Vehicle</h3> */}
       <Card>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <SimpleFormInput name="name" form={form} />
-              <SimpleFormInput name="year_of_manufacture" form={form} />
+              <SimpleFormInput name="cities" form={form} />
               <SimpleFormInput name="battery_capacity" form={form} />
-              <SimpleFormInput name="consumption_rate" form={form} />
 
               <Button type="submit">Submit</Button>
             </form>

@@ -4,17 +4,18 @@ import { MapContainer, TileLayer, Marker, Polyline } from "react-leaflet";
 import L, { DivIcon } from "leaflet";
 import polyline from "@mapbox/polyline";
 import "leaflet/dist/leaflet.css"; // Leaflet styles
-import { RouteQueryDTO } from "@/schemas/routeDTO";
 import { Card, CardContent } from "../ui/card";
 import { Skeleton } from "../ui/skeleton";
 import { MapPin } from "lucide-react";
 import ReactDOMServer from "react-dom/server";
 import { useEffect, useState } from "react";
+import { number } from "zod";
+import { routedto } from "@/app/home/testing/page";
 
 // import dynamic from 'next/dynamic';
 // import 'leaflet/dist/leaflet.css'; // Ensure CSS is included
 
-// Dynamically import MapContainer and TileLayer
+// // Dynamically import MapContainer and TileLayer
 // const MapContainer = dynamic(
 //   () => import('react-leaflet').then((mod) => mod.MapContainer),
 //   { ssr: false }
@@ -42,22 +43,32 @@ L.Icon.Default.mergeOptions({
 });
 
 type DTO = {
-  data: RouteQueryDTO;
+  data: routedto[];
   isLoading: boolean;
 };
 
-const RouteMap = (settings: DTO) => {
+const TestingMap = (settings: DTO) => {
   const [isMounted, setIsMounted] = useState(false);
-  
-  const routes = settings.data.accumulated_routes;
-  const charging_stops = settings.data.accumulated_charging_stops;
 
-  const endCoordinates = routes[routes.length - 1].end_coord;
+  const my_routes = settings.data.flatMap((dto) => dto.my_accumulated_routes).flat();
+  const my_charging_stops = settings.data.flatMap(
+    (dto) => dto.my_accumulated_charging_stops
+  );
+
+  const osrm_routes = settings.data.flatMap(
+    (dto) => dto.osrm_accumulated_routes
+  );
+
+  const startCoordinates = settings.data.flatMap((dto) => dto.start_coord);
+  const endCoordinates = settings.data.flatMap((dto) => dto.end_coord);
+
+  const centerStart = JSON.parse(startCoordinates[0]); 
+  const centerEnd = JSON.parse(endCoordinates[0]); 
 
   // Center map roughly between start and end
   const center: [number, number] = [
-    (routes[0].start_coord[0] + endCoordinates[0]) / 2, // lat
-    (routes[0].start_coord[1] + endCoordinates[1]) / 2, // lon
+    (centerStart["latitude"] + centerEnd["latitude"]) / 2, // lat
+    (centerStart["longitude"]  + centerEnd["longitude"]) / 2, // lon
   ];
 
   useEffect(() => {
@@ -94,8 +105,8 @@ const RouteMap = (settings: DTO) => {
   const endIcon = createLucideIcon(MapPin, "#9b87f5", 40); // Primary Purple
   const chargeStopIcon = createLucideIcon(MapPin, "red", 30); // Secondary Purple
 
-  return (
-    isMounted ? <MapContainer
+  return isMounted ? (
+    <MapContainer
       center={center}
       zoom={10}
       style={{ height: "500px", width: "100%" }}
@@ -106,36 +117,62 @@ const RouteMap = (settings: DTO) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       {/* Start Marker */}
-      <Marker
-        position={[routes[0].start_coord[0], routes[0].start_coord[1]]}
-        icon={startIcon}
-      />
+      {startCoordinates.map((value) => {
+        const coord = JSON.parse(value);
+
+        return (
+          <Marker
+            position={[coord["latitude"], coord["longitude"]]}
+            icon={startIcon}
+          />
+        );
+      })}
+
       {/* End Marker */}
-      <Marker
-        position={[endCoordinates[0], endCoordinates[1]]}
-        icon={endIcon}
-      />
+      {endCoordinates.map((value) => {
+        const coord = JSON.parse(value);
+
+        return (
+          <Marker
+            position={[coord["latitude"], coord["longitude"]]}
+            icon={endIcon}
+          />
+        );
+      })}
       {/* Route Lines */}
-      {routes.map((route, index) => (
+      {my_routes.map((route, index) => (
         <div key={index}>
           <Polyline
-            positions={polyline.decode(route.geometry)}
+            positions={polyline.decode(route)}
+            color="red"
+            weight={5}
+          />
+        </div>
+      ))}
+      {osrm_routes.map((route, index) => (
+        <div key={index}>
+          <Polyline
+            positions={polyline.decode(route)}
             color="#33C3F0"
             weight={5}
           />
         </div>
       ))}
       {/* Charging stations Lines */}
-      {charging_stops.map((stop, index) => (
-        <div key={index}>
-          <Marker
-            position={[stop.AddressInfo.Latitude, stop.AddressInfo.Longitude]}
-            icon={chargeStopIcon}
-          />
-        </div>
-      ))}
-    </MapContainer> : undefined
-  );
+      {my_charging_stops.map((stop, index) => {
+        const coord = JSON.parse(stop);
+
+        return (
+          <div key={index}>
+            <Marker
+              position={[coord["latitude"], coord["longitude"]]}
+              icon={chargeStopIcon}
+            />
+          </div>
+        );
+      })}
+    </MapContainer>
+  ) : undefined;
 };
 
-export default RouteMap;
+export default TestingMap;
