@@ -22,6 +22,7 @@ export const TestingForm = (settings: DTO) => {
   const onSubmit = (values: z.infer<typeof TestingSchema>) => {
     const params: any = new Object();
     params[UserDataFieldNames.user_name] = "";
+    params[TestingDataFields.name] = values.name;
     params[TestingDataFields.cities] = values.cities;
     params[TestingDataFields.battery_capacity] = values.battery_capacity;
 
@@ -32,6 +33,7 @@ export const TestingForm = (settings: DTO) => {
   const form = useForm<z.infer<typeof TestingSchema>>({
     resolver: zodResolver(TestingSchema),
     defaultValues: {
+      name: "undefined",
       cities: "",
       battery_capacity: "100",
     },
@@ -44,6 +46,7 @@ export const TestingForm = (settings: DTO) => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
+              <SimpleFormInput name="name" form={form} />
               <SimpleFormInput name="cities" form={form} />
               <SimpleFormInput name="battery_capacity" form={form} />
 

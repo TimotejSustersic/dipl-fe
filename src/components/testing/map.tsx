@@ -9,8 +9,7 @@ import { Skeleton } from "../ui/skeleton";
 import { MapPin } from "lucide-react";
 import ReactDOMServer from "react-dom/server";
 import { useEffect, useState } from "react";
-import { number } from "zod";
-import { routedto } from "@/app/home/testing/page";
+import { TestingRouteDTO } from "@/schemas/testsDTO";
 
 // import dynamic from 'next/dynamic';
 // import 'leaflet/dist/leaflet.css'; // Ensure CSS is included
@@ -43,7 +42,7 @@ L.Icon.Default.mergeOptions({
 });
 
 type DTO = {
-  data: routedto[];
+  data: TestingRouteDTO[];
   isLoading: boolean;
 };
 

@@ -15,7 +15,8 @@ export const publicRoutes = [""];
 
 export const ROUTE_MAPS = "/home/maps";
 export const ROUTE_CARS = "/home/cars";
-export const ROUTE_TESTING = "/home/testing";
+export const ROUTE_TESTING = "/home/testing_evaluation";
+export const ROUTE_INFRASTRUCTURE = "/home/infrastructure";
 
 export enum ERoutes {
   Maps = "/maps",
