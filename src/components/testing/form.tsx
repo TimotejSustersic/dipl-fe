@@ -50,7 +50,7 @@ export const TestingForm = (settings: DTO) => {
               <SimpleFormInput name="cities" form={form} />
               <SimpleFormInput name="battery_capacity" form={form} />
 
-              <Button type="submit">Submit</Button>
+              <Button type="submit" className=" border border-black hover:bg-white hover:text-black">Submit</Button>
             </form>
           </Form>
         </CardContent>

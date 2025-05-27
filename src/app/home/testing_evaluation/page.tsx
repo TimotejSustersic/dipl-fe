@@ -12,12 +12,6 @@ import { PlusIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { TestingForm } from "@/components/testing/form";
 import TestingMap from "@/components/testing/map";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { TestDTO, TestingRouteDTO } from "@/schemas/testsDTO";
 import { Button } from "@/components/ui/button";
 import {
@@ -115,7 +109,7 @@ const TestingPage = () => {
               onValueChange={onSelectionChange}
               value={selectedTest?.name}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="m-[5px] w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -128,13 +122,13 @@ const TestingPage = () => {
               </SelectContent>
             </Select>
             <Button
-              className="cursor-pointer flex items-center justify-center space-x-2 transition-shadow shadow-sm hover:shadow-lg flex-shrink-0"
+              className="cursor-pointer flex items-center justify-center space-x-2 transition-shadow shadow-sm hover:shadow-lg flex-shrink-0 border border-black hover:bg-white hover:text-black"
               onClick={onAddNew}
             >
               <PlusIcon size={40} />
             </Button>
           </div>
-          <div className="mt-2">
+          <div className="m-[5px]">
             <Input
               type="text"
               placeholder="Search..."

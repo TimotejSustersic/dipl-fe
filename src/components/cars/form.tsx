@@ -44,9 +44,11 @@ export const VehicleForm = (settings: DTO) => {
 
   return (
     <div>
-      <h3>Create a new Vehicle</h3>
       <Card>
         <CardContent>
+          <h3 className="text-2xl font-semibold mb-4">
+            Create a new Vehicle
+          </h3>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <SimpleFormInput name="name" form={form} />
@@ -54,7 +56,12 @@ export const VehicleForm = (settings: DTO) => {
               <SimpleFormInput name="battery_capacity" form={form} />
               <SimpleFormInput name="consumption_rate" form={form} />
 
-              <Button type="submit">Submit</Button>
+              <Button
+                type="submit"
+                className=" border border-black hover:bg-white hover:text-black"
+              >
+                Submit
+              </Button>
             </form>
           </Form>
         </CardContent>

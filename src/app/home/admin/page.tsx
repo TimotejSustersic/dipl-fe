@@ -1,18 +1,7 @@
 "use client";
 
 import { API_POST } from "@/components/API/utils";
-import { useEffect, useState } from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { VehicleDataFields, VehicleDTO } from "@/schemas/vehicleDTO";
-import { RouteDataFields } from "@/schemas/routeDTO";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, BatteryCharging, Calendar, Zap } from "lucide-react";
-import { VehicleForm } from "@/components/cars/form";
 
 const Cars = () => {
   const clear_data = (endpoint: string) => {
@@ -45,7 +34,7 @@ const Cars = () => {
       {getDom("Route")}
       {getDom("Vehicle")}
     </div>
-  )
+  );
 };
 
 export default Cars;

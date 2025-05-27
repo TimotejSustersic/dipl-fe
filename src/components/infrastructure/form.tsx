@@ -7,12 +7,12 @@ import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { API_POST } from "@/components/API/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { SimpleFormInput } from "@/components/ui/custom/simple-form-input";
 import { Dispatch, SetStateAction } from "react";
 
 import { UserDataFieldNames } from "@/schemas/userDTO";
 import { InfrastructureTestingDataFields, InfrastructureTestingSchema } from "@/components/infrastructure/dto";
+import { Card, CardContent } from "../ui/card";
 
 type DTO = {
   setRefresh: Dispatch<SetStateAction<boolean>>;
@@ -48,7 +48,7 @@ export const InfrastructureForm = (settings: DTO) => {
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <SimpleFormInput name="name" form={form} />
 
-              <Button type="submit">Submit</Button>
+              <Button type="submit" className=" border border-black hover:bg-white hover:text-black">Start Testing</Button>
             </form>
           </Form>
         </CardContent>

@@ -26,6 +26,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RouteMap from "@/components/maps/routeMap";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Maps = () => {
   const [vehicles, setVehicles] = useState<Array<VehicleDTO>>([]);
@@ -80,7 +81,7 @@ const Maps = () => {
           defaultSize={30}
           className="space-y-6 pr-4 border-r border-gray-200"
         >
-          <h2 className="text-2xl font-semibold mb-4">
+          <h2 className="text-2xl font-semibold mb-4 px-6 py-5 border-b-4 border-lime-600 rounded-t-lg shadow-md">
             Select Vehicle & Routes
           </h2>
           <div>
@@ -115,6 +116,7 @@ const Maps = () => {
           />
 
           <div className="space-y-3 mt-6">
+            <ScrollArea>
             {routesHistory.map((route, index) => (
               <Card
                 key={index}
@@ -153,6 +155,7 @@ const Maps = () => {
                 </CardContent>
               </Card>
             ))}
+            </ScrollArea>
           </div>
         </ResizablePanel>
         <ResizableHandle />

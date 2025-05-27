@@ -86,7 +86,10 @@ export const RoutingForm = (settings: DTO) => {
               <SimpleFormInput name="start_city" form={form} />
               <SimpleFormInput name="end_city" form={form} />
 
-              <Button type="submit">Submit</Button>
+              <Button 
+              type="submit"
+              className=" border border-black hover:bg-white hover:text-black"
+              >Submit</Button>
             </form>
           </Form>
         </CardContent>

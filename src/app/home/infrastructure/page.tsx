@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import InfrastructureRoutesMap from "@/components/infrastructure/InfrastructureRoutesMap";
-import InfrastructureMap from "@/components/infrastructure/InfrastructureMap";
+import Map from "@/components/infrastructure/map";
 import { InfrastructureForm } from "@/components/infrastructure/form";
 import {
   Table,
@@ -61,7 +60,9 @@ const InfrastructurePage = () => {
   >(new Set());
 
   // Data fetched from backend for selected checkboxes, used as data source for map
-  const [mapData, setMapData] = useState<Array<TestInstanceRouteDTO | TestingRouteDTO>>([]);
+  const [mapData, setMapData] = useState<
+    Array<TestInstanceRouteDTO | TestingRouteDTO>
+  >([]);
   const [emptyBatteryLocations, setEmptyBatteryLocations] = useState<
     Array<string>
   >([]);
@@ -155,7 +156,7 @@ const InfrastructurePage = () => {
         });
       } else {
         newSet.delete(item);
-        setMapData((prevData) => prevData.filter((d) => d.id !== item.id) ?? []);
+        setMapData((prevData) => prevData.filter((d) => d.id !== item.id));
       }
       return newSet;
     });
@@ -187,7 +188,7 @@ const InfrastructurePage = () => {
             onValueChange={onSelectionChangeBase}
             value={selectedTestBase?.name}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="m-[5px] w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -204,7 +205,7 @@ const InfrastructurePage = () => {
               onValueChange={onSelectionChangeInstance}
               value={selectedTestInstance?.name}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="m-[5px] w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -316,58 +317,50 @@ const InfrastructurePage = () => {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={70} className="pl-4 overflow-y-auto">
-          <div className="flex">
-            <div className="flex-grow">
-              <ScrollArea className="h-60 w-full rounded-md border">
-                <Table className="flex-grow">
-                  <TableCaption>A list of points.</TableCaption>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>latitude</TableHead>
-                      <TableHead>longitude</TableHead>
+          <Card className="p-4 flex space-x-4">
+            <ScrollArea className="h-60 w-1/2 rounded-md border">
+              <Table className="flex-grow">
+                <TableCaption>A list of points.</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>latitude</TableHead>
+                    <TableHead>longitude</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {userMarkers.map((point, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        {Math.floor(point.latitude * 1000) / 1000}
+                      </TableCell>
+                      <TableCell>
+                        {Math.floor(point.longitude * 1000) / 1000}
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {userMarkers.map((point, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          {Math.floor(point.latitude * 1000) / 1000}
-                        </TableCell>
-                        <TableCell>
-                          {Math.floor(point.longitude * 1000) / 1000}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </ScrollArea>
-            </div>
-            <InfrastructureForm setRefresh={setTestingRefresh} userMarkers={userMarkers} test_id={selectedTestBase?.id}/>
-          </div>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+            <InfrastructureForm
+              setRefresh={setTestingRefresh}
+              userMarkers={userMarkers}
+              test_id={selectedTestBase?.id}
+            />
+          </Card>
 
           {testsBase != null ? (
             <div>
-              {mapData.length > 0 ? (
-                <div className="mt-6 border rounded-lg shadow-md overflow-hidden">
-                  <InfrastructureRoutesMap
-                    routes={mapData}
-                    charging_stations={chargingStations}
-                    empty_battery_locations={emptyBatteryLocations}
-                    isLoading={isLoading}
-                  />
-                </div>
-              ) : (
-                <div className="mt-6 border rounded-lg shadow-md overflow-hidden">
-                  <InfrastructureMap
-                    charging_stations={chargingStations}
-                    empty_battery_locations={emptyBatteryLocations}
-                    isLoading={isLoading}
-                    userMarkers={userMarkers}
-                    addUserMarker={addUserMarker}
-                    removeUserMarker={removeUserMarker}
-                  />
-                </div>
-              )}
+              <div className="mt-6 border rounded-lg shadow-md overflow-hidden">
+                <Map
+                  routes={mapData}
+                  charging_stations={chargingStations}
+                  empty_battery_locations={emptyBatteryLocations}
+                  isLoading={isLoading}
+                  userMarkers={userMarkers}
+                  addUserMarker={addUserMarker}
+                  removeUserMarker={removeUserMarker}
+                />
+              </div>
             </div>
           ) : undefined}
         </ResizablePanel>

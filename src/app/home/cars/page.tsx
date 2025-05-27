@@ -44,22 +44,22 @@ const Cars = () => {
 
   return (
     <div className="h-full p-4">
-      <ResizablePanelGroup direction="horizontal">
+      <ResizablePanelGroup direction="horizontal" className="gap-4">
         <ResizablePanel defaultSize={30}>
           <div id="evaluation-sidebar" className="h-full flex flex-col">
-            <h2 className="font-extrabold text-2xl p-4 bg-stone-300 text-stone-800 border-b border-stone-500">
+            <h2 className="text-2xl font-semibold mb-4 px-6 py-5 border-b-4 border-lime-600 rounded-t-lg shadow-md">
               Vehicles
             </h2>
             <div className="flex flex-col gap-3 p-4 overflow-y-auto">
               <Card
-                className="bg-green-200 hover:bg-green-300 cursor-pointer flex items-center justify-center space-x-2 transition-shadow shadow-sm hover:shadow-lg"
+                className="bg-lime-200 hover:bg-lime-300 cursor-pointer flex items-center justify-center space-x-2 transition-shadow shadow-sm hover:shadow-lg"
                 onClick={() => {
                   selectVehicle(undefined);
                 }}
               >
                 <CardContent className="flex gap-2 p-3">
-                  <PlusIcon className="text-stone-800" size={24} />
-                  <span className="font-semibold text-stone-800">
+                  <PlusIcon className="text-black" size={24} />
+                  <span className="font-semibold text-black">
                     Add Vehicle
                   </span>
                 </CardContent>
@@ -67,9 +67,9 @@ const Cars = () => {
               {vehicles.map((vehicle) => (
                 <Card
                   key={vehicle.id}
-                  className={`bg-green-100 hover:bg-green-200 cursor-pointer transition-shadow shadow-sm hover:shadow-lg ${
+                  className={`bg-lime-100 hover:bg-lime-200 cursor-pointer transition-shadow shadow-sm hover:shadow-lg ${
                     selectedVehicle?.id === vehicle.id
-                      ? "ring-2 ring-green-500"
+                      ? "ring-2 ring-lime-500"
                       : ""
                   }`}
                 >
@@ -81,7 +81,7 @@ const Cars = () => {
                           selectVehicle(vehicle);
                         }}
                       >
-                        <div className="font-semibold text-green-900">
+                        <div className="font-semibold">
                           {vehicle.name}
                         </div>
                         <div className="flex space-x-3 mt-1 text-green-700 text-sm">
@@ -115,39 +115,39 @@ const Cars = () => {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={70}>
-          {selectedVehicle != undefined ? (
-            <Card className="p-6 m-4 bg-green-50 shadow-lg rounded-lg transition-all duration-300 ease-in-out">
-              <h3 className="text-xl font-bold mb-4 text-green-900">
-                {selectedVehicle.name}
-              </h3>
-              <div className="space-y-2 text-green-800">
-                <div className="flex items-center space-x-2">
-                  <BatteryCharging />
-                  <span>Battery Capacity:</span>
-                  <span className="font-semibold">
-                    {selectedVehicle.battery_capacity} kWh
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Calendar />
-                  <span>Year of Manufacture:</span>
-                  <span className="font-semibold">
-                    {selectedVehicle.year_of_manufacture}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Zap />
-                  <span>Consumption Rate:</span>
-                  <span className="font-semibold">
-                    {selectedVehicle.consumption_rate} kWh/km
-                  </span>
-                </div>
-              </div>
-            </Card>
-          ) : (
-            <VehicleForm setRefresh={setVehiclesRefresh} />
-          )}
-        </ResizablePanel>
+              {selectedVehicle != undefined ? (
+                <Card className="p-6 m-4 bg-lime-50 shadow-lg rounded-lg transition-all duration-300 ease-in-out">
+                  <h3 className="text-2xl font-extrabold mb-4 ">
+                    {selectedVehicle.name}
+                  </h3>
+                  <div className="space-y-2 text-lime-800">
+                    <div className="flex items-center space-x-2">
+                      <BatteryCharging />
+                      <span>Battery Capacity:</span>
+                      <span className="font-semibold">
+                        {selectedVehicle.battery_capacity} kWh
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Calendar />
+                      <span>Year of Manufacture:</span>
+                      <span className="font-semibold">
+                        {selectedVehicle.year_of_manufacture}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Zap />
+                      <span>Consumption Rate:</span>
+                      <span className="font-semibold">
+                        {selectedVehicle.consumption_rate} kWh/km
+                      </span>
+                    </div>
+                  </div>
+                </Card>
+              ) : (
+                <VehicleForm setRefresh={setVehiclesRefresh} />
+              )}
+            </ResizablePanel>
       </ResizablePanelGroup>
     </div>
   );
