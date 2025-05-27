@@ -42,37 +42,21 @@ L.Icon.Default.mergeOptions({
 });
 
 type DTO = {
-  data: RouteQueryDTO;
-  isLoading: boolean;
+  data?: RouteQueryDTO;
 };
 
 const RouteMap = (settings: DTO) => {
   const [isMounted, setIsMounted] = useState(false);
-  
-  const routes = settings.data.accumulated_routes;
-  const charging_stops = settings.data.accumulated_charging_stops;
 
-  const endCoordinates = routes[routes.length - 1].end_coord;
+  const routes = settings.data?.accumulated_routes;
+  const charging_stops = settings.data?.accumulated_charging_stops;
 
-  // Center map roughly between start and end
-  const center: [number, number] = [
-    (routes[0].start_coord[0] + endCoordinates[0]) / 2, // lat
-    (routes[0].start_coord[1] + endCoordinates[1]) / 2, // lon
-  ];
+  const start = routes ? routes[0].start_coord : undefined;
+  const end = routes ? routes[routes.length - 1].end_coord : undefined;
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  if (settings.isLoading) {
-    return (
-      <Card>
-        <CardContent className="p-0">
-          <Skeleton className="h-[500px] w-full rounded-md bg-gray-300 opacity-100" />
-        </CardContent>
-      </Card>
-    );
-  }
 
   const createLucideIcon = (
     IconComponent: React.ElementType,
@@ -90,52 +74,94 @@ const RouteMap = (settings: DTO) => {
     });
   };
 
-  const startIcon = createLucideIcon(MapPin, "#9b87f5", 40); // Sky Blue
-  const endIcon = createLucideIcon(MapPin, "#9b87f5", 40); // Primary Purple
-  const chargeStopIcon = createLucideIcon(MapPin, "red", 30); // Secondary Purple
+  const startIcon = createLucideIcon(MapPin, "#EF4444", 40);
+  const endIcon = createLucideIcon(MapPin, "#EF4444", 40); 
+  const chargeStopIcon = createLucideIcon(MapPin, "#FBBF24", 30); 
 
-  return (
-    isMounted ? <MapContainer
-      center={center}
-      zoom={10}
-      style={{ height: "500px", width: "100%" }}
-      className="rounded-lg" // Apply rounding to map itself if CardContent p-0 is used
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      {/* Start Marker */}
-      <Marker
-        position={[routes[0].start_coord[0], routes[0].start_coord[1]]}
-        icon={startIcon}
-      />
-      {/* End Marker */}
-      <Marker
-        position={[endCoordinates[0], endCoordinates[1]]}
-        icon={endIcon}
-      />
-      {/* Route Lines */}
-      {routes.map((route, index) => (
-        <div key={index}>
-          <Polyline
-            positions={polyline.decode(route.geometry)}
-            color="#33C3F0"
-            weight={5}
-          />
+  return isMounted ? (
+    <div style={{ position: "relative" }}>
+      <MapContainer
+        center={[46.046, 14.496]}
+        zoom={10}
+        style={{ height: "500px", width: "100%" }}
+        className="rounded-lg" // Apply rounding to map itself if CardContent p-0 is used
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        {/* Start Marker */}
+        {start ? (
+          <Marker position={[start[0], start[1]]} icon={startIcon} />
+        ) : undefined}
+        {/* End Marker */}
+        {end ? (
+          <Marker position={[end[0], end[1]]} icon={endIcon} />
+        ) : undefined}
+        {/* Route Lines */}
+        {routes?.map((route, index) => (
+          <div key={index}>
+            <Polyline
+              positions={polyline.decode(route.geometry)}
+              color="#8B5CF6"
+              weight={5}
+            />
+          </div>
+        ))}
+        {/* Charging stations Lines */}
+        {charging_stops?.map((stop, index) => (
+          <div key={index}>
+            <Marker
+              position={[stop.AddressInfo.Latitude, stop.AddressInfo.Longitude]}
+              icon={chargeStopIcon}
+            />
+          </div>
+        ))}
+      </MapContainer>
+      {/* Legend Box */}
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          backgroundColor: "white",
+          padding: "10px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+          zIndex: 1000,
+          width: "200px",
+          fontSize: "14px",
+          color: "#333",
+        }}
+      >
+        <h4 style={{ marginBottom: "8px", fontWeight: "bold" }}>Map Legend</h4>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <MapPin color="#EF4444" size={20} />
+          <span style={{ marginLeft: "8px" }}>Start / End Point</span>
         </div>
-      ))}
-      {/* Charging stations Lines */}
-      {charging_stops.map((stop, index) => (
-        <div key={index}>
-          <Marker
-            position={[stop.AddressInfo.Latitude, stop.AddressInfo.Longitude]}
-            icon={chargeStopIcon}
-          />
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <MapPin color="#FBBF24" size={20} />
+          <span style={{ marginLeft: "8px" }}>Charging Station</span>
         </div>
-      ))}
-    </MapContainer> : undefined
-  );
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
+          <div
+            style={{
+              width: "20px",
+              height: "5px",
+              backgroundColor: "#8B5CF6",
+              marginRight: "8px",
+              borderRadius: "2px",
+            }}
+          />
+          <span>Route (Red)</span>
+        </div>
+      </div>
+    </div>
+  ) : undefined;
 };
 
 export default RouteMap;

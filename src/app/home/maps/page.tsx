@@ -116,53 +116,67 @@ const Maps = () => {
           />
 
           <div className="space-y-3 mt-6">
-            <ScrollArea>
-            {routesHistory.map((route, index) => (
-              <Card
-                key={index}
-                onClick={() => {
-                  if (selectedVehicle == undefined) return;
+            <ScrollArea className="h-64">
+              {routesHistory.map((route, index) => (
+                <Card
+                  key={index}
+                  onClick={() => {
+                    if (selectedVehicle == undefined) return;
 
-                  setSelectedRoute(undefined);
+                    setSelectedRoute(undefined);
+                    setIsLoading(true);
 
-                  const params: any = new Object();
-                  params[UserDataFieldNames.user_name] = "";
-                  params[VehicleDataFields.vehicle_id] = selectedVehicle.id;
-                  params[RouteDataFields.start_city] = route.start_city;
-                  params[RouteDataFields.end_city] = route.end_city;
+                    const params: any = new Object();
+                    params[UserDataFieldNames.user_name] = "";
+                    params[VehicleDataFields.vehicle_id] = selectedVehicle.id;
+                    params[RouteDataFields.start_city] = route.start_city;
+                    params[RouteDataFields.end_city] = route.end_city;
 
-                  API_POST(
-                    "graphs/routing/new",
-                    params,
-                    (result: RouteQueryDTO) => {
-                      setSelectedRoute(result);
-                    }
-                  );
-                }}
-                className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
-              >
-                <CardHeader>
-                  <CardTitle>
-                    {route.start_city} -{">"} {route.end_city}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Consumption: {Math.round(route.total_consumption * 100)/100} K/Wh</span>
-                    <span>Distance: {Math.round((route.total_distance / 1000) * 100)/100} km</span>
-                    <span>Travel Time: {Math.round((route.total_travel_time / 3600) * 100)/100} h</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    API_POST(
+                      "graphs/routing/new",
+                      params,
+                      (result: RouteQueryDTO) => {
+                        setSelectedRoute(result);
+                        setIsLoading(false);
+                      }
+                    );
+                  }}
+                  className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                >
+                  <CardHeader>
+                    <CardTitle>
+                      {route.start_city} -{">"} {route.end_city}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>
+                        Consumption:{" "}
+                        {Math.round(route.total_consumption * 100) / 100} K/Wh
+                      </span>
+                      <span>
+                        Distance:{" "}
+                        {Math.round((route.total_distance / 1000) * 100) / 100}{" "}
+                        km
+                      </span>
+                      <span>
+                        Travel Time:{" "}
+                        {Math.round((route.total_travel_time / 3600) * 100) /
+                          100}{" "}
+                        h
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </ScrollArea>
           </div>
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={70} className="pl-4">
-          {selectedRoute != undefined ? (
+          {!isLoading ? (
             <div className="border rounded-lg shadow-md overflow-hidden">
-              <RouteMap data={selectedRoute} isLoading={isLoading} />
+              <RouteMap data={selectedRoute} />
             </div>
           ) : (
             <Skeleton className="h-[500px] w-full rounded-lg" />

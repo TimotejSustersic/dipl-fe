@@ -102,73 +102,125 @@ const TestingMap = (settings: DTO) => {
     });
   };
 
-  const startIcon = createLucideIcon(MapPin, "#9b87f5", 40); // Sky Blue
-  const endIcon = createLucideIcon(MapPin, "#9b87f5", 40); // Primary Purple
-  const chargeStopIcon = createLucideIcon(MapPin, "red", 30); // Secondary Purple
+  const startIcon = createLucideIcon(MapPin, "#EF4444", 40); 
+  const endIcon = createLucideIcon(MapPin, "#EF4444", 40); 
+  const chargeStopIcon = createLucideIcon(MapPin, "#FBBF24", 30); 
 
   return isMounted ? (
-    <MapContainer
-      center={center}
-      zoom={10}
-      style={{ height: "500px", width: "100%" }}
-      className="rounded-lg" // Apply rounding to map itself if CardContent p-0 is used
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      {/* Start Marker */}
-      {startCoordinates.map((value) => {
-        const coord = JSON.parse(value);
+    <div style={{ position: "relative" }}>
+      <MapContainer
+        center={center}
+        zoom={10}
+        style={{ height: "500px", width: "100%" }}
+        className="rounded-lg" // Apply rounding to map itself if CardContent p-0 is used
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        {/* Start Marker */}
+        {startCoordinates.map((value) => {
+          const coord = JSON.parse(value);
 
-        return (
-          <Marker
-            position={[coord["latitude"], coord["longitude"]]}
-            icon={startIcon}
-          />
-        );
-      })}
-
-      {/* End Marker */}
-      {endCoordinates.map((value) => {
-        const coord = JSON.parse(value);
-
-        return (
-          <Marker
-            position={[coord["latitude"], coord["longitude"]]}
-            icon={endIcon}
-          />
-        );
-      })}
-      {/* Route Lines */}
-      {my_routes.map((route, index) => (
-        <div key={index}>
-          <Polyline positions={polyline.decode(route)} color="red" weight={5} />
-        </div>
-      ))}
-      {osrm_routes.map((route, index) => (
-        <div key={index}>
-          <Polyline
-            positions={polyline.decode(route)}
-            color="#33C3F0"
-            weight={5}
-          />
-        </div>
-      ))}
-      {/* Charging stations Lines */}
-      {my_charging_stops.map((stop, index) => {
-        const coord = JSON.parse(stop);
-
-        return (
-          <div key={index}>
+          return (
             <Marker
               position={[coord["latitude"], coord["longitude"]]}
-              icon={chargeStopIcon}
+              icon={startIcon}
+            />
+          );
+        })}
+
+        {/* End Marker */}
+        {endCoordinates.map((value) => {
+          const coord = JSON.parse(value);
+
+          return (
+            <Marker
+              position={[coord["latitude"], coord["longitude"]]}
+              icon={endIcon}
+            />
+          );
+        })}
+        {/* Route Lines */}
+        {my_routes.map((route, index) => (
+          <div key={index}>
+            <Polyline positions={polyline.decode(route)} color="#8B5CF6" weight={5} />
+          </div>
+        ))}
+        {osrm_routes.map((route, index) => (
+          <div key={index}>
+            <Polyline
+              positions={polyline.decode(route)}
+              color="#2563EB"
+              weight={5}
             />
           </div>
-        );
-      })}
-    </MapContainer>
+        ))}
+        {/* Charging stations Lines */}
+        {my_charging_stops.map((stop, index) => {
+          const coord = JSON.parse(stop);
+
+          return (
+            <div key={index}>
+              <Marker
+                position={[coord["latitude"], coord["longitude"]]}
+                icon={chargeStopIcon}
+              />
+            </div>
+          );
+        })}
+      </MapContainer>
+      {/* Legend Box */}
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          backgroundColor: "white",
+          padding: "10px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+          zIndex: 1000,
+          width: "200px",
+          fontSize: "14px",
+          color: "#333",
+        }}
+      >
+        <h4 style={{ marginBottom: "8px", fontWeight: "bold" }}>Map Legend</h4>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
+          <MapPin color="#EF4444" size={20} />
+          <span style={{ marginLeft: "8px" }}>Start / End Point</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
+          <MapPin color="#FBBF24" size={20} />
+          <span style={{ marginLeft: "8px" }}>Charging Station</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
+          <div
+            style={{
+              width: "20px",
+              height: "5px",
+              backgroundColor: "#2563EB",
+              marginRight: "8px",
+              borderRadius: "2px",
+            }}
+          />
+          <span>Original Route</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
+          <div
+            style={{
+              width: "20px",
+              height: "5px",
+              backgroundColor: "#8B5CF6",
+              marginRight: "8px",
+              borderRadius: "2px",
+            }}
+          />
+          <span>Proposed Route</span>
+        </div>
+      </div>
+    </div>
   ) : undefined;
 };
 

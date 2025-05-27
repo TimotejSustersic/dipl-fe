@@ -1,6 +1,12 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker,Polyline, useMapEvents } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Polyline,
+  useMapEvents,
+} from "react-leaflet";
 import L, { DivIcon } from "leaflet";
 import "leaflet/dist/leaflet.css"; // Leaflet styles
 import { Card, CardContent } from "../ui/card";
@@ -30,7 +36,11 @@ type DTO = {
   removeUserMarker?: (index: number) => void;
 };
 
-const ClickHandler = ({ addUserMarker }: { addUserMarker?: (lat: number, lng: number) => void }) => {
+const ClickHandler = ({
+  addUserMarker,
+}: {
+  addUserMarker?: (lat: number, lng: number) => void;
+}) => {
   useMapEvents({
     click(e) {
       if (addUserMarker) {
@@ -44,7 +54,9 @@ const ClickHandler = ({ addUserMarker }: { addUserMarker?: (lat: number, lng: nu
 const Map = (settings: DTO) => {
   const [isMounted, setIsMounted] = useState(false);
 
-  const center = settings.empty_battery_locations.length ? JSON.parse(settings.empty_battery_locations[0]) : [46.046,14.496];
+  const center = settings.empty_battery_locations.length
+    ? JSON.parse(settings.empty_battery_locations[0])
+    : [46.046, 14.496];
 
   useEffect(() => {
     setIsMounted(true);
@@ -59,7 +71,6 @@ const Map = (settings: DTO) => {
   //     </Card>
   //   );
   // }
-
 
   const my_routes = settings.routes.flatMap((dto: any) =>
     dto.test_route
@@ -103,11 +114,6 @@ const Map = (settings: DTO) => {
   //   ? JSON.parse(settings.empty_battery_locations[0])
   //   : [46.046, 14.496];
 
-
-
-
-
-
   const createLucideIcon = (
     IconComponent: React.ElementType,
     color: string,
@@ -124,142 +130,242 @@ const Map = (settings: DTO) => {
     });
   };
 
-  const startIcon = createLucideIcon(MapPin, "#9b87f5", 40); // Sky Blue
-  const endIcon = createLucideIcon(MapPin, "#9b87f5", 40); // Primary Purple
-  const chargeStopIcon = createLucideIcon(MapPin, "red", 30); // Secondary Purple
-  const userMarkerIcon = createLucideIcon(MapPin, "green", 30); // Green for user markers
+  const startIcon = createLucideIcon(MapPin, "#EF4444", 40);
+  const endIcon = createLucideIcon(MapPin, "#EF4444", 40);
+  const chargeStopIcon = createLucideIcon(MapPin, "#FBBF24", 30);
+  const newChargeStopIcon = createLucideIcon(MapPin, "#14B8A6", 30);
+  const emptyBattery = createLucideIcon(MapPin, "#4B5563", 30);
+  const userMarkerIcon = createLucideIcon(MapPin, "green", 30);
 
   return isMounted ? (
-    <MapContainer
-      center={[46.046, 14.496]}
-      zoom={10}
-      style={{ height: "500px", width: "100%" }}
-      className="rounded-lg"
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-
-      {/* Charging stations */}
-      {settings.charging_stations.map((stop, index) => {
-        const coord = JSON.parse(stop);
-        return (
-          <Marker
-            key={`charge-stop-${index}`}
-            position={[coord.latitude, coord.longitude]}
-            icon={chargeStopIcon}
-          />
-        );
-      })}
-
-      {/* Empty battery locations */}
-      {settings.empty_battery_locations.map((stop, index) => {
-        const coord = JSON.parse(stop);
-        return (
-          <Marker
-            key={`empty-battery-${index}`}
-            position={[coord.latitude, coord.longitude]}
-            icon={chargeStopIcon}
-          />
-        );
-      })}
-
-      {/* User added markers */}
-      {settings.userMarkers?.map((marker, index) => (
-        <Marker
-          key={`user-marker-${index}`}
-          position={[marker.latitude, marker.longitude]}
-          icon={userMarkerIcon}
-          eventHandlers={{
-            click: () => {
-              if (settings.removeUserMarker) {
-                settings.removeUserMarker(index);
-              }
-            },
-          }}
+    <div style={{ position: "relative" }}>
+      <MapContainer
+        center={[46.046, 14.496]}
+        zoom={10}
+        style={{ height: "500px", width: "100%" }}
+        className="rounded-lg"
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-      ))}
-      {/* Start Marker */}
-      {startCoordinates.map((value, index) => {
-        const coord = JSON.parse(value);
 
-        return (
-          <Marker
-            key={index}
-            position={[coord.latitude, coord.longitude]}
-            icon={startIcon}
-          />
-        );
-      })}
-
-      {/* End Marker */}
-      {endCoordinates.map((value, index) => {
-        const coord = JSON.parse(value);
-
-        return (
-          <Marker
-            key={index}
-            position={[coord.latitude, coord.longitude]}
-            icon={endIcon}
-          />
-        );
-      })}
-      {/* Route Lines */}
-      {my_routes.map((route, index) => (
-        <div key={index}>
-          <Polyline positions={polyline.decode(route)} color="red" weight={5} />
-        </div>
-      ))}
-      {/* Route Lines */}
-      {new_routes.map((geometry, index) => (
-        <div key={index}>
-          <Polyline
-            positions={polyline.decode(geometry)}
-            color="#33C3F0"
-            weight={5}
-          />
-        </div>
-      ))}
-      {/* Route Lines */}
-      {osrm_routes.map((geometry, index) => (
-        <div key={index}>
-          <Polyline
-            positions={polyline.decode(geometry)}
-            color="#33C3F0"
-            weight={5}
-          />
-        </div>
-      ))}
-      {/* Charging stations Lines */}
-      {my_charging_stops.map((stop, index) => {
-        const coord = JSON.parse(stop);
-
-        return (
-          <div key={index}>
+        {/* Charging stations */}
+        {settings.charging_stations.map((stop, index) => {
+          const coord = JSON.parse(stop);
+          return (
             <Marker
-              position={[coord["latitude"], coord["longitude"]]}
+              key={`charge-stop-${index}`}
+              position={[coord.latitude, coord.longitude]}
               icon={chargeStopIcon}
             />
-          </div>
-        );
-      })}
-      {/* Charging stations Lines */}
-      {new_charging_stops.map((stop, index) => {
-        const coord = JSON.parse(stop);
+          );
+        })}
 
-        return (
-          <div key={index}>
+        {/* Empty battery locations */}
+        {settings.empty_battery_locations.map((stop, index) => {
+          const coord = JSON.parse(stop);
+          return (
             <Marker
-              position={[coord["latitude"], coord["longitude"]]}
-              icon={chargeStopIcon}
+              key={`empty-battery-${index}`}
+              position={[coord.latitude, coord.longitude]}
+              icon={emptyBattery}
+            />
+          );
+        })}
+
+        {/* User added markers */}
+        {settings.userMarkers?.map((marker, index) => (
+          <Marker
+            key={`user-marker-${index}`}
+            position={[marker.latitude, marker.longitude]}
+            icon={userMarkerIcon}
+            eventHandlers={{
+              click: () => {
+                if (settings.removeUserMarker) {
+                  settings.removeUserMarker(index);
+                }
+              },
+            }}
+          />
+        ))}
+        {/* Start Marker */}
+        {startCoordinates.map((value, index) => {
+          const coord = JSON.parse(value);
+
+          return (
+            <Marker
+              key={index}
+              position={[coord.latitude, coord.longitude]}
+              icon={startIcon}
+            />
+          );
+        })}
+
+        {/* End Marker */}
+        {endCoordinates.map((value, index) => {
+          const coord = JSON.parse(value);
+
+          return (
+            <Marker
+              key={index}
+              position={[coord.latitude, coord.longitude]}
+              icon={endIcon}
+            />
+          );
+        })}
+        {/* Route Lines */}
+        {my_routes.map((route, index) => (
+          <div key={index}>
+            <Polyline
+              positions={polyline.decode(route)}
+              color="#8B5CF6"
+              weight={5}
             />
           </div>
-        );
-      })}
-      {/* Click handler to add markers */}
-      {settings.addUserMarker && <ClickHandler addUserMarker={settings.addUserMarker} />}
-    </MapContainer>
+        ))}
+        {/* Route Lines */}
+        {new_routes.map((geometry, index) => (
+          <div key={index}>
+            <Polyline
+              positions={polyline.decode(geometry)}
+              color="red"
+              weight={5}
+            />
+          </div>
+        ))}
+        {/* Route Lines */}
+        {osrm_routes.map((geometry, index) => (
+          <div key={index}>
+            <Polyline
+              positions={polyline.decode(geometry)}
+              color="#2563EB"
+              weight={5}
+            />
+          </div>
+        ))}
+        {/* Charging stations Lines */}
+        {my_charging_stops.map((stop, index) => {
+          const coord = JSON.parse(stop);
+
+          return (
+            <div key={index}>
+              <Marker
+                position={[coord["latitude"], coord["longitude"]]}
+                icon={chargeStopIcon}
+              />
+            </div>
+          );
+        })}
+        {/* Charging stations Lines */}
+        {new_charging_stops.map((stop, index) => {
+          const coord = JSON.parse(stop);
+
+          return (
+            <div key={index}>
+              <Marker
+                position={[coord["latitude"], coord["longitude"]]}
+                icon={newChargeStopIcon}
+              />
+            </div>
+          );
+        })}
+        {/* Click handler to add markers */}
+        {settings.addUserMarker && (
+          <ClickHandler addUserMarker={settings.addUserMarker} />
+        )}
+      </MapContainer>
+      {/* Legend Box */}
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          backgroundColor: "white",
+          padding: "10px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+          zIndex: 1000,
+          width: "200px",
+          fontSize: "14px",
+          color: "#333",
+        }}
+      >
+        <h4 style={{ marginBottom: "8px", fontWeight: "bold" }}>Map Legend</h4>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <MapPin color="#EF4444" size={20} />
+          <span style={{ marginLeft: "8px" }}>Start / End Point</span>
+        </div>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <MapPin color="#FBBF24" size={20} />
+          <span style={{ marginLeft: "8px" }}>Charging Station</span>
+        </div>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <MapPin color="#4B5563" size={20} />
+          <span style={{ marginLeft: "8px" }}>Empty Battery Location</span>
+        </div>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <MapPin color="green" size={20} />
+          <span style={{ marginLeft: "8px" }}>Proposed Charging Station</span>
+        </div>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <MapPin color="#14B8A6" size={20} />
+          <span style={{ marginLeft: "8px" }}>New Charging Station</span>
+        </div>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <div
+            style={{
+              width: "20px",
+              height: "5px",
+              backgroundColor: "#2563EB",
+              marginRight: "8px",
+              borderRadius: "2px",
+            }}
+          />
+          <span>Original Route</span>
+        </div>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <div
+            style={{
+              width: "20px",
+              height: "5px",
+              backgroundColor: "#8B5CF6",
+              marginRight: "8px",
+              borderRadius: "2px",
+            }}
+          />
+          <span>Proposed Route</span>
+        </div>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
+        >
+          <div
+            style={{
+              width: "20px",
+              height: "5px",
+              backgroundColor: "red",
+              marginRight: "8px",
+              borderRadius: "2px",
+            }}
+          />
+          <span>New Route</span>
+        </div>
+      </div>
+    </div>
   ) : null;
 };
 
