@@ -12,43 +12,41 @@ import { SimpleFormInput } from "@/components/ui/custom/simple-form-input";
 import { Dispatch, SetStateAction } from "react";
 
 import { UserDataFieldNames } from "@/schemas/userDTO";
-import { TestingDataFields, TestingSchema } from "@/components/testing/dto";
+import { InfrastructureTestingDataFields, InfrastructureTestingSchema } from "@/components/infrastructure/dto";
 
 type DTO = {
   setRefresh: Dispatch<SetStateAction<boolean>>;
+  userMarkers?: Array<{ latitude: number; longitude: number }>;
+  test_id?: number;
 };
 
-export const TestingForm = (settings: DTO) => {
-  const onSubmit = (values: z.infer<typeof TestingSchema>) => {
+export const InfrastructureForm = (settings: DTO) => {
+  const onSubmit = (values: z.infer<typeof InfrastructureTestingSchema>) => {
     const params: any = new Object();
     params[UserDataFieldNames.user_name] = "";
-    params[TestingDataFields.name] = values.name;
-    params[TestingDataFields.cities] = values.cities;
-    params[TestingDataFields.battery_capacity] = values.battery_capacity;
+    params[InfrastructureTestingDataFields.name] = values.name;
+    params["test_id"] = settings.test_id;
+    params["additional_charging_stations"] = settings.userMarkers;
 
-    API_POST("graphs/testing/new", params, () => {
+    API_POST("graphs/infrastructure/new", params, () => {
       settings.setRefresh(true);
     });
   };
-  const form = useForm<z.infer<typeof TestingSchema>>({
-    resolver: zodResolver(TestingSchema),
+  const form = useForm<z.infer<typeof InfrastructureTestingSchema>>({
+    resolver: zodResolver(InfrastructureTestingSchema),
     defaultValues: {
       name: "undefined",
-      cities: "",
-      battery_capacity: "100",
     },
   });
 
   return (
-    <div>
+    <div className="flex-grow" >
       {/* <h3>Create a new Vehicle</h3> */}
       <Card>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <SimpleFormInput name="name" form={form} />
-              <SimpleFormInput name="cities" form={form} />
-              <SimpleFormInput name="battery_capacity" form={form} />
 
               <Button type="submit">Submit</Button>
             </form>

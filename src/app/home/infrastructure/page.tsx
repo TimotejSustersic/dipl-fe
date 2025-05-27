@@ -7,19 +7,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { Card, CardContent } from "@/components/ui/card";
-import { PlusIcon } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { TestingForm } from "@/components/testing/form";
-import TestingMap from "@/components/testing/map";
+import { Card } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { TestDTO, TestingRouteDTO } from "@/schemas/testsDTO";
-import { Button } from "@/components/ui/button";
+  TestDTO,
+  TestingRouteDTO,
+  TestInstanceDTO,
+  TestInstanceRouteDTO,
+} from "@/schemas/testsDTO";
 import {
   Select,
   SelectContent,
@@ -28,71 +22,140 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import InfrastructureRoutesMap from "@/components/infrastructure/InfrastructureRoutesMap";
+import InfrastructureMap from "@/components/infrastructure/InfrastructureMap";
+import { InfrastructureForm } from "@/components/infrastructure/form";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const InfrastructurePage = () => {
-  const [testsDropdown, setTestsDropdown] = useState<TestDTO[]>([]);
-  const [selectedTest, setSelectetTest] = useState<TestDTO | undefined>(
+  const [testsBase, setTestsBase] = useState<TestDTO[]>([]);
+  const [selectedTestBase, setSelectedTestBase] = useState<TestDTO | undefined>(
     undefined
   );
+  const [testsInstance, setTestsInstance] = useState<
+    TestInstanceDTO[] | undefined
+  >(undefined);
+  const [selectedTestInstance, setSelectedTestInstance] = useState<
+    TestInstanceDTO | undefined
+  >(undefined);
 
   // List of items on the left panel
-  const [testingItems, setTestingItems] = useState<Array<TestingRouteDTO>>([]);
-  // Search filter text
-  const [searchText, setSearchText] = useState<string>("");
+  const [testingBaseItems, setTestingBaseItems] = useState<
+    Array<TestingRouteDTO>
+  >([]);
+  const [testingInstanceItems, setTestingInstanceItems] = useState<
+    Array<TestInstanceRouteDTO>
+  >([]);
   // Selected checkboxes in the list
   const [selectedCheckboxes, setSelectedCheckboxes] = useState<
-    Set<TestingRouteDTO>
+    Set<TestInstanceRouteDTO | TestingRouteDTO>
   >(new Set());
 
   // Data fetched from backend for selected checkboxes, used as data source for map
-  const [mapData, setMapData] = useState<Array<TestingRouteDTO>>([]);
+  const [mapData, setMapData] = useState<Array<TestInstanceRouteDTO | TestingRouteDTO>>([]);
+  const [emptyBatteryLocations, setEmptyBatteryLocations] = useState<
+    Array<string>
+  >([]);
+  const [chargingStations, setChargingStations] = useState<Array<string>>([]);
 
   const [testingRefresh, setTestingRefresh] = useState(false);
+
   // Loading state for data fetching
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // New state for user added markers
+  const [userMarkers, setUserMarkers] = useState<
+    Array<{ latitude: number; longitude: number }>
+  >([]);
+
+  // Handler to add a new user marker
+  const addUserMarker = (lat: number, lng: number) => {
+    setUserMarkers((prev) => [...prev, { latitude: lat, longitude: lng }]);
+  };
+
+  // Handler to remove a user marker by index
+  const removeUserMarker = (index: number) => {
+    setUserMarkers((prev) => prev.filter((_, i) => i !== index));
+  };
+
   // Fetch initial list of items on mount
   useEffect(() => {
-    API_POST("graphs/tests/query", undefined, (result: Array<TestDTO>) => {
-      if (result?.length) setTestsDropdown(result);
+    let params = new Object() as any;
+    params["get_empty"] = true;
+
+    API_POST("graphs/tests/query", params, (result: Array<TestDTO>) => {
+      if (result?.length) setTestsBase(result);
       setTestingRefresh(false);
     });
-  }, [testingRefresh]);
+  }, []);
 
-  // on drodown value changed
+  // on first drodown value changed
   useEffect(() => {
-    if (selectedTest != null) {
-      let params = new Object() as any;
-      params["search"] = searchText;
-      params["id"] = selectedTest.id;
+    if (selectedTestBase != null) {
+      setEmptyBatteryLocations(
+        selectedTestBase.my_accumulated_empty_battery ?? []
+      );
 
+      let params = new Object() as any;
+      params["test_id"] = selectedTestBase.id;
+
+      API_POST(
+        "graphs/infrastructure/query",
+        params,
+        (result: Array<TestInstanceDTO>) => {
+          setTestsInstance(result);
+        }
+      );
       API_POST(
         "graphs/testing/items/query",
         params,
         (result: Array<TestingRouteDTO>) => {
-          setTestingItems(result);
+          setTestingBaseItems(result);
         }
       );
     }
-  }, [selectedTest, searchText]);
+  }, [selectedTestBase, testingRefresh]);
 
-  const onCheckboxChange = (item: TestingRouteDTO, checked: boolean) => {
+  // on second drodown value changed
+  useEffect(() => {
+    if (selectedTestBase != null) {
+      let params = new Object() as any;
+      params["test_id"] = selectedTestBase.id;
+
+      API_POST(
+        "graphs/infrastructure/items/query",
+        params,
+        (result: Array<TestInstanceRouteDTO>) => {
+          setTestingInstanceItems(result);
+        }
+      );
+    }
+  }, [selectedTestInstance]);
+
+  const onCheckboxChange = (
+    item: TestInstanceRouteDTO | TestingRouteDTO,
+    checked: boolean
+  ) => {
     setSelectedCheckboxes((prev) => {
       const newSet = new Set(prev);
       if (checked) {
         newSet.add(item);
         setMapData((prevData) => {
-          prevData.push(item);
+          prevData.push(item as any);
           return prevData;
         });
       } else {
         newSet.delete(item);
-        setMapData((prevData) =>
-          prevData.filter(
-            (d) =>
-              d.start_city !== item.start_city && d.end_city !== item.end_city
-          )
-        );
+        setMapData((prevData) => prevData.filter((d) => d.id !== item.id) ?? []);
       }
       return newSet;
     });
@@ -103,9 +166,15 @@ const InfrastructurePage = () => {
     setMapData([]);
   };
 
-  const onSelectionChange = (name: string): void => {
-    const selecton = testsDropdown.find((val: TestDTO) => val.name == name);
-    setSelectetTest(selecton);
+  const onSelectionChangeBase = (name: string): void => {
+    const selecton = testsBase.find((val: TestDTO) => val.name == name);
+    setSelectedTestBase(selecton);
+  };
+  const onSelectionChangeInstance = (name: string): void => {
+    const selecton = testsInstance?.find(
+      (val: TestInstanceDTO) => val.name == name
+    );
+    setSelectedTestInstance(selecton);
   };
   return (
     <div className="h-full p-4">
@@ -114,12 +183,32 @@ const InfrastructurePage = () => {
           defaultSize={30}
           className="space-y-4 pr-4 border-r border-gray-200 flex flex-col"
         >
-           <Select onValueChange={onSelectionChange} value={selectedTest?.name}>
+          <Select
+            onValueChange={onSelectionChangeBase}
+            value={selectedTestBase?.name}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {testsBase.map((test, index) => (
+                <SelectItem key={test.id} value={test.name}>
+                  {" "}
+                  {test.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {testsInstance ? (
+            <Select
+              onValueChange={onSelectionChangeInstance}
+              value={selectedTestInstance?.name}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {testsDropdown.map((test, index) => (
+                {testsInstance.map((test, index) => (
                   <SelectItem key={index} value={test.name}>
                     {" "}
                     {test.name}
@@ -127,86 +216,160 @@ const InfrastructurePage = () => {
                 ))}
               </SelectContent>
             </Select>
-          <div className="flex items-center space-x-2">
-            <Select onValueChange={onSelectionChange} value={selectedTest?.name}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {testsDropdown.map((test, index) => (
-                  <SelectItem key={index} value={test.name}>
-                    {" "}
-                    {test.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="mt-2">
-            <Input
-              type="text"
-              placeholder="Search..."
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="w-full"
-            />
-          </div>
+          ) : undefined}
           <div className="flex-1 overflow-y-auto space-y-2">
-            {testingItems.length > 0
-              ? testingItems.map((item: TestingRouteDTO, index) => (
-                  <Card
-                    key={index}
-                    className={`flex items-center justify-between p-3 ${
-                      Math.abs(
-                        item.my_total_distance - item.osrm_total_distance
-                      ) /
-                        1000 >
-                      2 // more than 2km
-                        ? "bg-red-200"
-                        : ""
-                    }`}
-                  >
-                    <div className="flex flex-col">
-                      <div>
-                        {item.start_city} -{">"} {item.end_city}
+            <ScrollArea>
+              {selectedTestInstance == null
+                ? testingBaseItems.map((item: TestingRouteDTO, index) => (
+                    <Card
+                      key={index}
+                      className={`flex items-center justify-between p-3 ${
+                        Math.abs(
+                          item.my_total_distance - item.osrm_total_distance
+                        ) /
+                          1000 >
+                        2 // more than 2km
+                          ? "bg-red-200"
+                          : ""
+                      }`}
+                    >
+                      <div className="flex flex-col">
+                        <div>
+                          {item.start_city} -{">"} {item.end_city}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Distance Diff:{" "}
+                          {(
+                            (item.my_total_distance -
+                              item.osrm_total_distance) /
+                            1000
+                          ).toFixed(2)}{" "}
+                          km
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Time Diff:{" "}
+                          {(
+                            (item.my_total_time - item.osrm_total_time) /
+                            3600
+                          ).toFixed(2)}{" "}
+                          h
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        Distance Diff:{" "}
-                        {(
-                          (item.my_total_distance - item.osrm_total_distance) /
-                          1000
-                        ).toFixed(2)}{" "}
-                        km
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Time Diff:{" "}
-                        {(
-                          (item.my_total_time - item.osrm_total_time) /
-                          3600
-                        ).toFixed(2)}{" "}
-                        h
-                      </div>
-                    </div>
-                    <Checkbox
-                      checked={selectedCheckboxes.has(item)}
-                      onCheckedChange={(checked) =>
-                        onCheckboxChange(item, checked === true)
-                      }
-                    />
-                  </Card>
-                ))
-              : undefined}
+                      <Checkbox
+                        checked={selectedCheckboxes.has(item)}
+                        onCheckedChange={(checked) =>
+                          onCheckboxChange(item, checked === true)
+                        }
+                      />
+                    </Card>
+                  ))
+                : testingInstanceItems.map(
+                    (item: TestInstanceRouteDTO, index) => (
+                      <Card
+                        key={index}
+                        className={`flex items-center justify-between p-3 ${
+                          Math.abs(
+                            item.new_total_distance -
+                              item.test_route.osrm_total_distance
+                          ) /
+                            1000 >
+                          2 // more than 2km
+                            ? "bg-red-200"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex flex-col">
+                          <div>
+                            {item.test_route.start_city} -{">"}{" "}
+                            {item.test_route.end_city}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            Distance Diff:{" "}
+                            {(
+                              (item.new_total_distance -
+                                item.test_route.osrm_total_distance) /
+                              1000
+                            ).toFixed(2)}{" "}
+                            km
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            Time Diff:{" "}
+                            {(
+                              (item.new_total_time -
+                                item.test_route.osrm_total_time) /
+                              3600
+                            ).toFixed(2)}{" "}
+                            h
+                          </div>
+                        </div>
+                        <Checkbox
+                          checked={selectedCheckboxes.has(item)}
+                          onCheckedChange={(checked) =>
+                            onCheckboxChange(item, checked === true)
+                          }
+                        />
+                      </Card>
+                    )
+                  )}
+            </ScrollArea>
           </div>
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={70} className="pl-4 overflow-y-auto">
-          {mapData.length > 0 ? (
-            <div className="mt-6 border rounded-lg shadow-md overflow-hidden">
-              <TestingMap data={mapData} isLoading={isLoading} />
+          <div className="flex">
+            <div className="flex-grow">
+              <ScrollArea className="h-60 w-full rounded-md border">
+                <Table className="flex-grow">
+                  <TableCaption>A list of points.</TableCaption>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>latitude</TableHead>
+                      <TableHead>longitude</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {userMarkers.map((point, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          {Math.floor(point.latitude * 1000) / 1000}
+                        </TableCell>
+                        <TableCell>
+                          {Math.floor(point.longitude * 1000) / 1000}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
             </div>
-          ) : (
-            <TestingForm setRefresh={setTestingRefresh} />
-          )}
+            <InfrastructureForm setRefresh={setTestingRefresh} userMarkers={userMarkers} test_id={selectedTestBase?.id}/>
+          </div>
+
+          {testsBase != null ? (
+            <div>
+              {mapData.length > 0 ? (
+                <div className="mt-6 border rounded-lg shadow-md overflow-hidden">
+                  <InfrastructureRoutesMap
+                    routes={mapData}
+                    charging_stations={chargingStations}
+                    empty_battery_locations={emptyBatteryLocations}
+                    isLoading={isLoading}
+                  />
+                </div>
+              ) : (
+                <div className="mt-6 border rounded-lg shadow-md overflow-hidden">
+                  <InfrastructureMap
+                    charging_stations={chargingStations}
+                    empty_battery_locations={emptyBatteryLocations}
+                    isLoading={isLoading}
+                    userMarkers={userMarkers}
+                    addUserMarker={addUserMarker}
+                    removeUserMarker={removeUserMarker}
+                  />
+                </div>
+              )}
+            </div>
+          ) : undefined}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

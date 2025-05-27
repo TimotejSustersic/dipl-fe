@@ -49,7 +49,9 @@ type DTO = {
 const TestingMap = (settings: DTO) => {
   const [isMounted, setIsMounted] = useState(false);
 
-  const my_routes = settings.data.flatMap((dto) => dto.my_accumulated_routes).flat();
+  const my_routes = settings.data
+    .flatMap((dto) => dto.my_accumulated_routes)
+    .flat();
   const my_charging_stops = settings.data.flatMap(
     (dto) => dto.my_accumulated_charging_stops
   );
@@ -61,13 +63,13 @@ const TestingMap = (settings: DTO) => {
   const startCoordinates = settings.data.flatMap((dto) => dto.start_coord);
   const endCoordinates = settings.data.flatMap((dto) => dto.end_coord);
 
-  const centerStart = JSON.parse(startCoordinates[0]); 
-  const centerEnd = JSON.parse(endCoordinates[0]); 
+  const centerStart = JSON.parse(startCoordinates[0]);
+  const centerEnd = JSON.parse(endCoordinates[0]);
 
   // Center map roughly between start and end
   const center: [number, number] = [
     (centerStart["latitude"] + centerEnd["latitude"]) / 2, // lat
-    (centerStart["longitude"]  + centerEnd["longitude"]) / 2, // lon
+    (centerStart["longitude"] + centerEnd["longitude"]) / 2, // lon
   ];
 
   useEffect(() => {
@@ -141,11 +143,7 @@ const TestingMap = (settings: DTO) => {
       {/* Route Lines */}
       {my_routes.map((route, index) => (
         <div key={index}>
-          <Polyline
-            positions={polyline.decode(route)}
-            color="red"
-            weight={5}
-          />
+          <Polyline positions={polyline.decode(route)} color="red" weight={5} />
         </div>
       ))}
       {osrm_routes.map((route, index) => (

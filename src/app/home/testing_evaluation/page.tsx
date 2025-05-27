@@ -64,7 +64,7 @@ const TestingPage = () => {
     if (selectedTest != null) {
       let params = new Object() as any;
       params["search"] = searchText;
-      params["id"] = selectedTest.id;
+      params["test_id"] = selectedTest.id;
 
       API_POST(
         "graphs/testing/items/query",
@@ -87,12 +87,7 @@ const TestingPage = () => {
         });
       } else {
         newSet.delete(item);
-        setMapData((prevData) =>
-          prevData.filter(
-            (d) =>
-              d.start_city !== item.start_city && d.end_city !== item.end_city
-          )
-        );
+        setMapData((prevData) => prevData.filter((d) => d.id !== item.id));
       }
       return newSet;
     });
@@ -116,7 +111,10 @@ const TestingPage = () => {
           className="space-y-4 pr-4 border-r border-gray-200 flex flex-col"
         >
           <div className="flex items-center space-x-2">
-            <Select onValueChange={onSelectionChange} value={selectedTest?.name}>
+            <Select
+              onValueChange={onSelectionChange}
+              value={selectedTest?.name}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
               </SelectTrigger>
@@ -151,7 +149,11 @@ const TestingPage = () => {
                   <Card
                     key={index}
                     className={`flex items-center justify-between p-3 ${
-                      Math.abs(item.my_total_distance - item.osrm_total_distance) / 1000 > 2 // more than 2km
+                      Math.abs(
+                        item.my_total_distance - item.osrm_total_distance
+                      ) /
+                        1000 >
+                      2 // more than 2km
                         ? "bg-red-200"
                         : ""
                     }`}
@@ -161,10 +163,20 @@ const TestingPage = () => {
                         {item.start_city} -{">"} {item.end_city}
                       </div>
                       <div className="text-sm text-gray-600">
-                        Distance Diff: {((item.my_total_distance - item.osrm_total_distance) / 1000).toFixed(2)} km
+                        Distance Diff:{" "}
+                        {(
+                          (item.my_total_distance - item.osrm_total_distance) /
+                          1000
+                        ).toFixed(2)}{" "}
+                        km
                       </div>
                       <div className="text-sm text-gray-600">
-                        Time Diff: {((item.my_total_time - item.osrm_total_time) / 3600).toFixed(2)} h
+                        Time Diff:{" "}
+                        {(
+                          (item.my_total_time - item.osrm_total_time) /
+                          3600
+                        ).toFixed(2)}{" "}
+                        h
                       </div>
                     </div>
                     <Checkbox
