@@ -22,6 +22,7 @@ export type TestDTO = {
 };
 
 export type TestInstanceDTO = {
+  id: number;
   name: string;
   test: TestDTO;
   charging_stops: Array<string>;

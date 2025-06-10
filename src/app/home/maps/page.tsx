@@ -82,7 +82,7 @@ const Maps = () => {
           className="space-y-6 pr-4 border-r border-gray-200"
         >
           <h2 className="text-2xl font-semibold mb-4 px-6 py-5 border-b-4 border-lime-600 rounded-t-lg shadow-md">
-            Select Vehicle & Routes
+            Select Vehicle & Route
           </h2>
           <div>
             <label

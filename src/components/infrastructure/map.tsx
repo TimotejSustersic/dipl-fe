@@ -239,7 +239,7 @@ const Map = (settings: DTO) => {
           <div key={index}>
             <Polyline
               positions={polyline.decode(geometry)}
-              color="#2563EB"
+              color="oklch(54.6% 0.245 262.881)"
               weight={5}
             />
           </div>
@@ -329,7 +329,7 @@ const Map = (settings: DTO) => {
             style={{
               width: "20px",
               height: "5px",
-              backgroundColor: "#2563EB",
+              backgroundColor: "oklch(54.6% 0.245 262.881)",
               marginRight: "8px",
               borderRadius: "2px",
             }}

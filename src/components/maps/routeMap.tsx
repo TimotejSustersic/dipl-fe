@@ -76,7 +76,7 @@ const RouteMap = (settings: DTO) => {
 
   const startIcon = createLucideIcon(MapPin, "#EF4444", 40);
   const endIcon = createLucideIcon(MapPin, "#EF4444", 40); 
-  const chargeStopIcon = createLucideIcon(MapPin, "#FBBF24", 30); 
+  const chargeStopIcon = createLucideIcon(MapPin, "oklch(62.3% 0.214 259.815)", 30); 
 
   return isMounted ? (
     <div style={{ position: "relative" }}>
@@ -144,7 +144,7 @@ const RouteMap = (settings: DTO) => {
         <div
           style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}
         >
-          <MapPin color="#FBBF24" size={20} />
+          <MapPin color="oklch(62.3% 0.214 259.815)" size={20} />
           <span style={{ marginLeft: "8px" }}>Charging Station</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
@@ -157,7 +157,7 @@ const RouteMap = (settings: DTO) => {
               borderRadius: "2px",
             }}
           />
-          <span>Route (Red)</span>
+          <span>Route</span>
         </div>
       </div>
     </div>

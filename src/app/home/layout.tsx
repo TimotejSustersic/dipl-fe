@@ -27,7 +27,7 @@ const NavLink = ({ href, icon: Icon, label, currentPath }: NavLinkProps) => {
         className={
           navigationMenuTriggerStyle() +
           " flex items-center gap-2 transition-all hover:bg-primary/10 " +
-          (isActive ? "border-b-2 border-lime-600 border-primary" : "")
+          (isActive ? "border-b-2 border-lime-600" : "")
         }
         href={href}
       >

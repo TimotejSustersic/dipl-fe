@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const TestingPage = () => {
   const [testsDropdown, setTestsDropdown] = useState<TestDTO[]>([]);
@@ -138,6 +139,7 @@ const TestingPage = () => {
             />
           </div>
           <div className="flex-1 overflow-y-auto space-y-2">
+            <ScrollArea className="h-[700px]">
             {testingItems.length > 0
               ? testingItems.map((item: TestingRouteDTO, index) => (
                   <Card
@@ -182,6 +184,7 @@ const TestingPage = () => {
                   </Card>
                 ))
               : undefined}
+              </ScrollArea>
           </div>
         </ResizablePanel>
         <ResizableHandle />

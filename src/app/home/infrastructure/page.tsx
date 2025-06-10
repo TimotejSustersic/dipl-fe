@@ -34,6 +34,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  ClockArrowDown,
+  ClockArrowUp,
+  MapPinMinus,
+  MapPinPlus,
+  MapPin,
+  Clock,
+} from "lucide-react";
 
 const InfrastructurePage = () => {
   const [testsBase, setTestsBase] = useState<TestDTO[]>([]);
@@ -131,6 +139,7 @@ const InfrastructurePage = () => {
     if (selectedTestBase != null) {
       let params = new Object() as any;
       params["test_id"] = selectedTestBase.id;
+      params["test_instance_id"] = selectedTestInstance?.id;
 
       API_POST(
         "graphs/infrastructure/items/query",
@@ -176,6 +185,11 @@ const InfrastructurePage = () => {
       (val: TestInstanceDTO) => val.name == name
     );
     setSelectedTestInstance(selecton);
+    console.log(selecton)
+    if (selecton != null)
+      setUserMarkers(
+        selecton.charging_stops.map((val) => JSON.parse(val))
+      );
   };
   return (
     <div className="h-full p-4">
@@ -219,17 +233,17 @@ const InfrastructurePage = () => {
             </Select>
           ) : undefined}
           <div className="flex-1 overflow-y-auto space-y-2">
-            <ScrollArea>
+            <ScrollArea className="h-[700px]">
               {selectedTestInstance == null
                 ? testingBaseItems.map((item: TestingRouteDTO, index) => (
                     <Card
                       key={index}
-                      className={`flex items-center justify-between p-3 ${
+                      className={`flex items-center justify-between p-3 mt-1 ${
                         Math.abs(
                           item.my_total_distance - item.osrm_total_distance
                         ) /
                           1000 >
-                        2 // more than 2km
+                        4 // more than 2km
                           ? "bg-red-200"
                           : ""
                       }`}
@@ -238,22 +252,28 @@ const InfrastructurePage = () => {
                         <div>
                           {item.start_city} -{">"} {item.end_city}
                         </div>
-                        <div className="text-sm text-gray-600">
-                          Distance Diff:{" "}
-                          {(
-                            (item.my_total_distance -
-                              item.osrm_total_distance) /
-                            1000
-                          ).toFixed(2)}{" "}
-                          km
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Time Diff:{" "}
-                          {(
-                            (item.my_total_time - item.osrm_total_time) /
-                            3600
-                          ).toFixed(2)}{" "}
-                          h
+                        <div className="flex gap-2">
+                          <div className="flex items-center space-x-2">
+                            <MapPinPlus size={16} />
+                            <span>
+                              {(
+                                (item.my_total_distance -
+                                  item.osrm_total_distance) /
+                                1000
+                              ).toFixed(2)}
+                              km
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <ClockArrowUp size={16} />
+                            <span>
+                              {(
+                                (item.my_total_time - item.osrm_total_time) /
+                                60
+                              ).toFixed(1)}{" "}
+                              min
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <Checkbox
@@ -268,39 +288,71 @@ const InfrastructurePage = () => {
                     (item: TestInstanceRouteDTO, index) => (
                       <Card
                         key={index}
-                        className={`flex items-center justify-between p-3 ${
-                          Math.abs(
-                            item.new_total_distance -
-                              item.test_route.osrm_total_distance
-                          ) /
+                        className={`p-3 mt-1 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 flex justify-between items-center ${
+                          (item.test_route.my_total_distance -
+                            item.test_route.osrm_total_distance +
+                            item.new_total_distance) /
                             1000 >
-                          2 // more than 2km
+                          4 // more than 4km
                             ? "bg-red-200"
-                            : ""
+                            : "bg-green-200"
                         }`}
                       >
-                        <div className="flex flex-col">
-                          <div>
-                            {item.test_route.start_city} -{">"}{" "}
+                        <div className="flex flex-col flex-grow">
+                          <div className="font-semibold mb-2">
+                            {item.test_route.start_city} - {">"}{" "}
                             {item.test_route.end_city}
                           </div>
-                          <div className="text-sm text-gray-600">
-                            Distance Diff:{" "}
-                            {(
-                              (item.new_total_distance -
-                                item.test_route.osrm_total_distance) /
-                              1000
-                            ).toFixed(2)}{" "}
-                            km
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            Time Diff:{" "}
-                            {(
-                              (item.new_total_time -
-                                item.test_route.osrm_total_time) /
-                              3600
-                            ).toFixed(2)}{" "}
-                            h
+                          <div className="text-gray-700 flex flex-col gap-1">
+                            <div className="border-l-4 pl-2 border-blue-600">
+                              <div className="font-medium mb-1">Original</div>
+                              <div className="flex gap-2">
+                                <div className="flex items-center space-x-2">
+                                  <MapPin size={16} />
+                                  <span>
+                                    {(
+                                      (item.test_route.my_total_distance -
+                                        item.test_route.osrm_total_distance) /
+                                      1000
+                                    ).toFixed(2)}{" "}
+                                    km
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Clock size={16} />
+                                  <span>
+                                    {(
+                                      (item.test_route.my_total_time -
+                                        item.test_route.osrm_total_time) /
+                                      60
+                                    ).toFixed(1)}{" "}
+                                    min
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="border-l-4 pl-2 border-red-500 ">
+                              <div className="font-medium mb-1">Saved</div>
+                              <div className="flex gap-2">
+                                <div className="flex items-center space-x-2">
+                                  <MapPinMinus size={16} />
+                                  <span>
+                                    {
+                                      -(item.new_total_distance / 1000).toFixed(
+                                        2
+                                      )
+                                    }{" "}
+                                    km
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <ClockArrowDown size={16} />
+                                  <span>
+                                    {-(item.new_total_time / 60).toFixed(1)} min
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <Checkbox
