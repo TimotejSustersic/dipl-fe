@@ -83,7 +83,7 @@ const RouteMap = (settings: DTO) => {
       <MapContainer
         center={[46.046, 14.496]}
         zoom={10}
-        style={{ height: "500px", width: "100%" }}
+        style={{ height: "760px", width: "100%" }}
         className="rounded-lg" // Apply rounding to map itself if CardContent p-0 is used
       >
         <TileLayer

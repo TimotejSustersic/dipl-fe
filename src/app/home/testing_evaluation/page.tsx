@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ClockArrowUp, MapPinPlus } from "lucide-react";
 
 const TestingPage = () => {
   const [testsDropdown, setTestsDropdown] = useState<TestDTO[]>([]);
@@ -140,51 +141,58 @@ const TestingPage = () => {
           </div>
           <div className="flex-1 overflow-y-auto space-y-2">
             <ScrollArea className="h-[700px]">
-            {testingItems.length > 0
-              ? testingItems.map((item: TestingRouteDTO, index) => (
-                  <Card
-                    key={index}
-                    className={`flex items-center justify-between p-3 ${
-                      Math.abs(
-                        item.my_total_distance - item.osrm_total_distance
-                      ) /
-                        1000 >
-                      2 // more than 2km
-                        ? "bg-red-200"
-                        : ""
-                    }`}
-                  >
-                    <div className="flex flex-col">
-                      <div>
-                        {item.start_city} -{">"} {item.end_city}
+              {testingItems.length > 0
+                ? testingItems.map((item: TestingRouteDTO, index) => (
+                    <Card
+                      key={index}
+                      className={`flex items-center justify-between p-3 mt-1 ${
+                        Math.abs(
+                          item.my_total_distance - item.osrm_total_distance
+                        ) /
+                          1000 >
+                        2 // more than 2km
+                          ? "bg-red-200"
+                          : ""
+                      }`}
+                    >
+                      <div className="flex flex-col">
+                        <div>
+                          {item.start_city} -{">"} {item.end_city}
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="flex items-center space-x-2">
+                            <MapPinPlus size={16} />
+                            <span>
+                              {(
+                                (item.my_total_distance -
+                                  item.osrm_total_distance) /
+                                1000
+                              ).toFixed(2)}{" "}
+                              km
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <ClockArrowUp size={16} />
+                            <span>
+                              {(
+                                (item.my_total_time - item.osrm_total_time) /
+                                60
+                              ).toFixed(1)}{" "}
+                              min
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        Distance Diff:{" "}
-                        {(
-                          (item.my_total_distance - item.osrm_total_distance) /
-                          1000
-                        ).toFixed(2)}{" "}
-                        km
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Time Diff:{" "}
-                        {(
-                          (item.my_total_time - item.osrm_total_time) /
-                          3600
-                        ).toFixed(2)}{" "}
-                        h
-                      </div>
-                    </div>
-                    <Checkbox
-                      checked={selectedCheckboxes.has(item)}
-                      onCheckedChange={(checked) =>
-                        onCheckboxChange(item, checked === true)
-                      }
-                    />
-                  </Card>
-                ))
-              : undefined}
-              </ScrollArea>
+                      <Checkbox
+                        checked={selectedCheckboxes.has(item)}
+                        onCheckedChange={(checked) =>
+                          onCheckboxChange(item, checked === true)
+                        }
+                      />
+                    </Card>
+                  ))
+                : undefined}
+            </ScrollArea>
           </div>
         </ResizablePanel>
         <ResizableHandle />
