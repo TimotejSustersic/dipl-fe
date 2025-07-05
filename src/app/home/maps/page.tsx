@@ -24,10 +24,14 @@ import {
   RouteQueryDTO,
 } from "@/schemas/routeDTO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import RouteMap from "@/components/maps/routeMap";
+// import RouteMap from "@/components/maps/routeMap";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
+import dynamic from 'next/dynamic';
+const RouteMap = dynamic(() => import("@/components/maps/routeMap"), {
+  ssr: false,
+  loading: () => <p>Loading map...</p>,
+});
 const Maps = () => {
   const [vehicles, setVehicles] = useState<Array<VehicleDTO>>([]);
   const [routesHistory, setRoutesHistory] = useState<Array<RouteHistoryDTO>>(
