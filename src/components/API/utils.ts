@@ -7,6 +7,9 @@ export async function API_POST(
   errClb?: (params: any) => void,
 ) {
   try {
+    console.log(process.env.NEXT_PUBLIC_API_URL)
+    console.log(process.env.NEXT_PUBLIC_API_URL + url)
+    console.log(url)
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + url, {
       method: "POST",
       body: JSON.stringify(params),
