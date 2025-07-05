@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import Map from "@/components/infrastructure/map";
+// import Map from "@/components/infrastructure/map";
 import { InfrastructureForm } from "@/components/infrastructure/form";
 import {
   Table,
@@ -42,6 +42,12 @@ import {
   MapPin,
   Clock,
 } from "lucide-react";
+import dynamic from 'next/dynamic';
+const Map = dynamic(() => import("@/components/infrastructure/map"), {
+  ssr: false,
+  loading: () => <p>Loading map...</p>,
+});
+
 
 const InfrastructurePage = () => {
   const [testsBase, setTestsBase] = useState<TestDTO[]>([]);

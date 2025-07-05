@@ -119,11 +119,12 @@ const TestingMap = (settings: DTO) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         {/* Start Marker */}
-        {startCoordinates.map((value) => {
+        {startCoordinates.map((value, index) => {
           const coord = JSON.parse(value);
 
           return (
             <Marker
+              key={coord["latitude"] + index + coord["longitude"]}
               position={[coord["latitude"], coord["longitude"]]}
               icon={startIcon}
             />
@@ -131,11 +132,12 @@ const TestingMap = (settings: DTO) => {
         })}
 
         {/* End Marker */}
-        {endCoordinates.map((value) => {
+        {endCoordinates.map((value, index) => {
           const coord = JSON.parse(value);
 
           return (
             <Marker
+              key={coord["latitude"] + coord["longitude"] + index}
               position={[coord["latitude"], coord["longitude"]]}
               icon={endIcon}
             />
@@ -143,12 +145,12 @@ const TestingMap = (settings: DTO) => {
         })}
         {/* Route Lines */}
         {my_routes.map((route, index) => (
-          <div key={index}>
+          <div key={"#8B5CF6" + index}>
             <Polyline positions={polyline.decode(route)} color="#8B5CF6" weight={5} />
           </div>
         ))}
         {osrm_routes.map((route, index) => (
-          <div key={index}>
+          <div key={"#2563EB" + index}>
             <Polyline
               positions={polyline.decode(route)}
               color="#2563EB"
@@ -161,7 +163,7 @@ const TestingMap = (settings: DTO) => {
           const coord = JSON.parse(stop);
 
           return (
-            <div key={index}>
+            <div key={index + coord["latitude"] +  coord["longitude"]}>
               <Marker
                 position={[coord["latitude"], coord["longitude"]]}
                 icon={chargeStopIcon}

@@ -11,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PlusIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { TestingForm } from "@/components/testing/form";
-import TestingMap from "@/components/testing/map";
+// import TestingMap from "@/components/testing/map";
 import { TestDTO, TestingRouteDTO } from "@/schemas/testsDTO";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,12 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ClockArrowUp, MapPinPlus } from "lucide-react";
+import dynamic from 'next/dynamic';
+
+const TestingMap = dynamic(() => import("@/components/testing/map"), {
+  ssr: false,
+  loading: () => <p>Loading map...</p>,
+});
 
 const TestingPage = () => {
   const [testsDropdown, setTestsDropdown] = useState<TestDTO[]>([]);
