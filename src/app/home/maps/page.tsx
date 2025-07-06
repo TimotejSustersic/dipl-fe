@@ -49,6 +49,19 @@ const Maps = () => {
   useEffect(() => {
     getCars();
     getRoutes();
+
+    // tmp  test server:
+    API_POST("graphs/test", undefined, (result: any) => {
+      console.log("gtraph/test works")
+      console.log(result)
+    });
+    // tmp  test server:
+    API_POST("graphs/testOSRM", undefined, (result: any) => {
+      console.log("gtraph/testOSRM works")
+      console.log(result)
+    });
+
+
   }, [routesRefresh]);
 
   const getCars = () => {
