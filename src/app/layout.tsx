@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="h-dvh">{children}</body>
+      <body className="h-dvh">
+        <main>{children}</main>
+        <Toaster position="top-center" />
+      </body>
     </html>
   );
 }

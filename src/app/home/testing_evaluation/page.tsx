@@ -49,7 +49,7 @@ const TestingPage = () => {
   // Data fetched from backend for selected checkboxes, used as data source for map
   const [mapData, setMapData] = useState<Array<TestingRouteDTO>>([]);
 
-  const [testingRefresh, setTestingRefresh] = useState(false);
+  const [testingRefresh, setTestingRefresh] = useState<boolean>(false);
   // Loading state for data fetching
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -67,6 +67,8 @@ const TestingPage = () => {
       let params = new Object() as any;
       params["search"] = searchText;
       params["test_id"] = selectedTest.id;
+
+      setMapData([])
 
       API_POST(
         "graphs/testing/items/query",
@@ -100,8 +102,8 @@ const TestingPage = () => {
     setMapData([]);
   };
 
-  const onSelectionChange = (name: string): void => {
-    const selecton = testsDropdown.find((val: TestDTO) => val.name == name);
+  const onSelectionChange = (id: string): void => {
+    const selecton = testsDropdown.find((val: TestDTO) => val.id == id);
     setSelectetTest(selecton);
   };
 
@@ -115,16 +117,16 @@ const TestingPage = () => {
           <div className="flex items-center space-x-2">
             <Select
               onValueChange={onSelectionChange}
-              value={selectedTest?.name}
+              value={selectedTest?.id}
             >
               <SelectTrigger className="m-[5px] w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {testsDropdown.map((test, index) => (
-                  <SelectItem key={index} value={test.name}>
+                  <SelectItem key={index} value={test.id}>
                     {" "}
-                    {test.name}
+                    {test.name} - {test.battery_capacity}%
                   </SelectItem>
                 ))}
               </SelectContent>

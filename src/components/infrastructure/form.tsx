@@ -13,11 +13,12 @@ import { Dispatch, SetStateAction } from "react";
 import { UserDataFieldNames } from "@/schemas/userDTO";
 import { InfrastructureTestingDataFields, InfrastructureTestingSchema } from "@/components/infrastructure/dto";
 import { Card, CardContent } from "../ui/card";
+import { toast } from "sonner";
 
 type DTO = {
   setRefresh: Dispatch<SetStateAction<boolean>>;
   userMarkers?: Array<{ latitude: number; longitude: number }>;
-  test_id?: number;
+  test_id?: string;
 };
 
 export const InfrastructureForm = (settings: DTO) => {
@@ -27,9 +28,10 @@ export const InfrastructureForm = (settings: DTO) => {
     params[InfrastructureTestingDataFields.name] = values.name;
     params["test_id"] = settings.test_id;
     params["additional_charging_stations"] = settings.userMarkers;
-
+    toast.info("Test Started");
     API_POST("graphs/infrastructure/new", params, () => {
       settings.setRefresh(true);
+      toast.success("Test Finished");
     });
   };
   const form = useForm<z.infer<typeof InfrastructureTestingSchema>>({
