@@ -122,7 +122,7 @@ const RouteMap = (settings: DTO) => {
       <div
         style={{
           position: "absolute",
-          top: 10,
+          bottom: 10,
           right: 10,
           backgroundColor: "white",
           padding: "10px",
