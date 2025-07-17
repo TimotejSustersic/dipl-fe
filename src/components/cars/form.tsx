@@ -53,8 +53,8 @@ export const VehicleForm = (settings: DTO) => {
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <SimpleFormInput name="name" form={form} />
               <SimpleFormInput name="year_of_manufacture" form={form} />
-              <SimpleFormInput name="battery_capacity" form={form} />
-              <SimpleFormInput name="consumption_rate" form={form} />
+              <SimpleFormInput name="battery_capacity" form={form} unit="kWh" />
+              <SimpleFormInput name="consumption_rate" form={form} unit="kWh/km" />
 
               <Button
                 type="submit"

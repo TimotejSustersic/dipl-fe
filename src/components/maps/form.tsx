@@ -15,6 +15,7 @@ import { UserDataFieldNames } from "@/schemas/userDTO";
 import { VehicleDataFields, VehicleDTO } from "@/schemas/vehicleDTO";
 import { RouteDataFields, RouteDTO, RouteQueryDTO } from "@/schemas/routeDTO";
 import { RouteSchema } from "@/components/maps/route";
+import { toast } from "sonner";
 
 type DTO = {
   selectedVehicle?: VehicleDTO;
@@ -66,12 +67,13 @@ export const RoutingForm = (settings: DTO) => {
     params[VehicleDataFields.battery_capacity] = values.battery_capacity;
     params[RouteDataFields.start_city] = values.start_city;
     params[RouteDataFields.end_city] = values.end_city;
-
+    toast.info("Routing Started");
     settings.setIsLoading(true);
     API_POST("graphs/routing/new", params, (result: RouteQueryDTO) => {
       settings.setSelectedRoute(result);
       settings.setRefresh(true);
       settings.setIsLoading(false);
+      toast.success("Routing Finished");
     });
   };
 
@@ -82,7 +84,7 @@ export const RoutingForm = (settings: DTO) => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <SimpleFormInput name="battery_capacity" form={form} />
+              <SimpleFormInput name="battery_capacity" form={form} unit="%" />
               <SimpleFormInput name="start_city" form={form} />
               <SimpleFormInput name="end_city" form={form} />
 

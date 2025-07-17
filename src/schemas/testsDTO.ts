@@ -15,9 +15,10 @@ export type TestingRouteDTO = {
 };
 
 export type TestDTO = {
+  battery_capacity: number;
   name: string;
   cities: string[];
-  id: number;
+  id: string;
   my_accumulated_empty_battery?: string[];
 };
 

@@ -112,6 +112,32 @@ const Maps = () => {
             </Select>
           </div>
 
+          {
+            selectedVehicle ? (
+              <Card>
+                <CardHeader className="p-4">
+                  <CardTitle>{selectedVehicle.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div>
+                      <span className="font-semibold">Consumption Rate: </span>
+                      {selectedVehicle.consumption_rate}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Year of Manufacture: </span>
+                      {selectedVehicle.year_of_manufacture}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Battery Capacity: </span>
+                      {selectedVehicle.battery_capacity}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : undefined
+          }
+
           <RoutingForm
             selectedVehicle={selectedVehicle}
             setSelectedRoute={setSelectedRoute}

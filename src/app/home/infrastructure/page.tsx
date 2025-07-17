@@ -120,6 +120,8 @@ const InfrastructurePage = () => {
         selectedTestBase.my_accumulated_empty_battery ?? []
       );
 
+      setMapData([]);
+
       let params = new Object() as any;
       params["test_id"] = selectedTestBase.id;
 
@@ -147,6 +149,7 @@ const InfrastructurePage = () => {
       params["test_id"] = selectedTestBase.id;
       params["test_instance_id"] = selectedTestInstance?.id;
 
+      setMapData([]);
       API_POST(
         "graphs/infrastructure/items/query",
         params,
@@ -182,8 +185,8 @@ const InfrastructurePage = () => {
     setMapData([]);
   };
 
-  const onSelectionChangeBase = (name: string): void => {
-    const selecton = testsBase.find((val: TestDTO) => val.name == name);
+  const onSelectionChangeBase = (id: string): void => {
+    const selecton = testsBase.find((val: TestDTO) => val.id == id);
     setSelectedTestBase(selecton);
   };
   const onSelectionChangeInstance = (name: string): void => {
@@ -191,7 +194,6 @@ const InfrastructurePage = () => {
       (val: TestInstanceDTO) => val.name == name
     );
     setSelectedTestInstance(selecton);
-    console.log(selecton)
     if (selecton != null)
       setUserMarkers(
         selecton.charging_stops.map((val) => JSON.parse(val))
@@ -206,16 +208,16 @@ const InfrastructurePage = () => {
         >
           <Select
             onValueChange={onSelectionChangeBase}
-            value={selectedTestBase?.name}
+            value={selectedTestBase?.id}
           >
             <SelectTrigger className="m-[5px] w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {testsBase.map((test, index) => (
-                <SelectItem key={test.id} value={test.name}>
+                <SelectItem key={test.id} value={test.id}>
                   {" "}
-                  {test.name}
+                  {test.name} - {test.battery_capacity}%
                 </SelectItem>
               ))}
             </SelectContent>

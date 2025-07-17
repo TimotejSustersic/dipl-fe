@@ -13,6 +13,7 @@ import { Dispatch, SetStateAction } from "react";
 
 import { UserDataFieldNames } from "@/schemas/userDTO";
 import { TestingDataFields, TestingSchema } from "@/components/testing/dto";
+import { toast } from "sonner";
 
 type DTO = {
   setRefresh: Dispatch<SetStateAction<boolean>>;
@@ -26,8 +27,11 @@ export const TestingForm = (settings: DTO) => {
     params[TestingDataFields.cities] = values.cities;
     params[TestingDataFields.battery_capacity] = values.battery_capacity;
 
-    API_POST("graphs/testing/new", params, () => {
+    toast.info("Test Started");
+    API_POST("graphs/testing/new", params, (x: any) => {
+
       settings.setRefresh(true);
+      toast.success("Testing Completed.");
     });
   };
   const form = useForm<z.infer<typeof TestingSchema>>({
@@ -48,9 +52,14 @@ export const TestingForm = (settings: DTO) => {
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <SimpleFormInput name="name" form={form} />
               <SimpleFormInput name="cities" form={form} />
-              <SimpleFormInput name="battery_capacity" form={form} />
+              <SimpleFormInput name="battery_capacity" form={form} unit="%" />
 
-              <Button type="submit" className=" border border-black hover:bg-white hover:text-black">Submit</Button>
+              <Button
+                type="submit"
+                className=" border border-black hover:bg-white hover:text-black"
+              >
+                Submit
+              </Button>
             </form>
           </Form>
         </CardContent>
