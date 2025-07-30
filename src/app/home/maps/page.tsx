@@ -122,7 +122,7 @@ const Maps = () => {
                   <div className="space-y-1 text-sm text-gray-600">
                     <div>
                       <span className="font-semibold">Consumption Rate: </span>
-                      {selectedVehicle.consumption_rate}
+                      {selectedVehicle.consumption_rate} kWh/km
                     </div>
                     <div>
                       <span className="font-semibold">Year of Manufacture: </span>
@@ -130,7 +130,7 @@ const Maps = () => {
                     </div>
                     <div>
                       <span className="font-semibold">Battery Capacity: </span>
-                      {selectedVehicle.battery_capacity}
+                      {selectedVehicle.battery_capacity} kWh
                     </div>
                   </div>
                 </CardContent>
